@@ -1,4 +1,3 @@
-// Initialize Firebase (replace with your Firebase config if needed)
 const firebaseConfig = {
     apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -26,6 +25,87 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }).catch(err => console.log("Ticker load skipped:", err));
 
+    // Login / Auth Modal Controls
+    const loginBtn = document.getElementById("loginBtn");
+    const authModal = document.getElementById("authModal");
+    const closeModal = document.getElementById("closeModal");
+
+    if (loginBtn && authModal) {
+        loginBtn.onclick = () => authModal.classList.remove("hidden");
+    }
+    if (closeModal && authModal) {
+        closeModal.onclick = () => authModal.classList.add("hidden");
+    }
+
+    // Google Login Handler
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
+    if (googleLoginBtn) {
+        googleLoginBtn.onclick = async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                checkUserProfile(result.user);
+            } catch (err) {
+                alert("Google Login Failed: " + err.message);
+            }
+        };
+    }
+
+    // Email & Password Login / Signup Handler
+    const emailPassLoginBtn = document.getElementById("emailPassLoginBtn");
+    if (emailPassLoginBtn) {
+        emailPassLoginBtn.onclick = async () => {
+            const email = document.getElementById("authEmail").value.trim();
+            const password = document.getElementById("authPassword").value.trim();
+            if (!email || !password) {
+                alert("Please enter both email and password.");
+                return;
+            }
+            try {
+                let userCred;
+                try {
+                    userCred = await auth.signInWithEmailAndPassword(email, password);
+                } catch (e) {
+                    userCred = await auth.createUserWithEmailAndPassword(email, password);
+                }
+                checkUserProfile(userCred.user);
+            } catch (err) {
+                alert("Authentication Error: " + err.message);
+            }
+        };
+    }
+
+    // Save Profile Handler
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    if (saveProfileBtn) {
+        saveProfileBtn.onclick = async () => {
+            const user = auth.currentUser;
+            const name = document.getElementById("profileName").value.trim();
+            const dob = document.getElementById("profileDob").value;
+
+            if (!name || !dob) {
+                alert("Please fill in your name and date of birth.");
+                return;
+            }
+
+            if (user) {
+                const sixDigitId = Math.floor(100000 + Math.random() * 900000).toString();
+                await db.collection("users").doc(user.uid).set({
+                    uid: user.uid,
+                    email: user.email,
+                    name,
+                    dob,
+                    sixDigitId,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                alert("Profile saved successfully!");
+                authModal.classList.add("hidden");
+                location.reload();
+            }
+        };
+    }
+
     // Cart Modal Controls
     const cartModal = document.getElementById("cartModal");
     const openCartBtn = document.getElementById("openCartBtn");
@@ -43,12 +123,12 @@ document.addEventListener("DOMContentLoaded", () => {
         instaCountInput.oninput = () => {
             let count = parseInt(instaCountInput.value) || 100;
             let price = (count / 1000) * 60;
-            if (count > 1000) price = price * 0.9; // 10% discount
+            if (count > 1000) price = price * 0.9;
             instaPriceSpan.innerText = Math.round(price);
         };
     }
 
-    // Buy Button Triggers (Add to Cart)
+    // Buy Button Triggers
     document.querySelectorAll(".buy-trigger").forEach(button => {
         button.onclick = (e) => {
             const card = e.target.closest(".card");
@@ -83,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
         applyPromoBtn.onclick = async () => {
             const code = document.getElementById("promoCodeInput").value.trim().toUpperCase();
             const feedback = document.getElementById("promoFeedback");
-            
             if (!code) return;
 
             try {
@@ -121,13 +200,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (cartModal) cartModal.classList.add("hidden");
             paymentModal.classList.remove("hidden");
             
-            // Set dynamic QR code image if applicable
             const qrImg = document.getElementById("dynamicQrImg");
             if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=cyberpratik@fam&pn=CyberStore&am=${calculateTotal()}&cu=INR`;
         };
     }
 
-    // Close Payment Modal
     const closePaymentModal = document.getElementById("closePaymentModal");
     if (closePaymentModal && paymentModal) {
         closePaymentModal.onclick = () => paymentModal.classList.add("hidden");
@@ -164,12 +241,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 await db.collection("orders").doc(orderId).set(orderData);
-                alert(`Order submitted successfully! Your Order ID is ${orderId}. Keep this safe for status tracking.`);
+                alert(`Order submitted successfully! Your Order ID is ${orderId}.`);
                 cart = [];
                 updateCartUI();
                 if (paymentModal) paymentModal.classList.add("hidden");
             } catch (err) {
-                alert("Error submitting order. Please try again or contact support.");
+                alert("Error submitting order. Please try again.");
             }
         };
     }
@@ -188,6 +265,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+async function checkUserProfile(user) {
+    const doc = await db.collection("users").doc(user.uid).get();
+    const authModal = document.getElementById("authModal");
+    if (!doc.exists || !doc.data().name) {
+        document.getElementById("loginStep").classList.add("hidden");
+        document.getElementById("profileStep").classList.remove("hidden");
+        document.getElementById("modalTitle").innerText = "Complete Profile";
+    } else {
+        if (authModal) authModal.classList.add("hidden");
+        location.reload();
+    }
+}
 
 function calculateTotal() {
     let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
