@@ -2,278 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Store | Premium OTTs & Boosts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Store | Master Admin Terminal</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <!-- 8D Immersive Background Energy Orbs -->
-    <div class="cyber-orb orb-1"></div>
-    <div class="cyber-orb orb-2"></div>
-    <div class="cyber-orb orb-3"></div>
+<body style="padding: 20px;">
+    <div class="container cyber-box" style="max-width: 1000px; margin: 20px auto;">
+        <h1 style="color: var(--neon-purple); text-align: center; margin-bottom: 20px;">⚡ MASTER ADMIN COMMAND CENTER ⚡</h1>
+        
+        <!-- Live Ticker & Announcement Editor -->
+        <div style="background: rgba(25, 10, 45, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
+            <h3 style="color: #fff; margin-bottom: 10px; font-size: 16px;">📢 Broadcast Live Event / Coupon Ticker</h3>
+            <input type="text" id="adminTickerInput" class="cyber-input" placeholder="Type live coupon or event message here..." style="margin-bottom: 10px;">
+            <button id="saveTickerBtn" class="cyber-btn">Publish to Live Website</button>
+        </div>
 
-    <!-- Live Admin Announcement & Event / Coupon Ticker Bar -->
-    <div id="liveEventTicker" style="background: linear-gradient(90deg, #7000ff, #b026ff, #ff0055); color: #fff; padding: 8px 15px; font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; position: relative; z-index: 1001; box-shadow: 0 0 15px rgba(176,38,255,0.4);">
-        <marquee scrollamount="5" id="tickerTextContent">⚡ WELCOME TO CYBER STORE | Use Code <span style="color:#00ff66;">CYBER10</span> for instant savings! | Premium Streaming & Social Boosts Active 24/7 ⚡</marquee>
-    </div>
+        <!-- Promo Code Manager -->
+        <div style="background: rgba(25, 10, 45, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
+            <h3 style="color: #fff; margin-bottom: 10px; font-size: 16px;">🎟️ Create / Update Discount Promo Code</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="adminPromoCode" class="cyber-input" placeholder="CODE (e.g., CYBER20)" style="flex: 1; margin-bottom:0;">
+                <input type="number" id="adminPromoDiscount" class="cyber-input" placeholder="Discount % (e.g., 20)" style="width: 150px; margin-bottom:0;">
+                <button id="savePromoBtn" class="cyber-btn" style="width: auto;">Save Coupon</button>
+            </div>
+        </div>
 
-    <!-- Banned / Suspended Full-Screen Red Neon Overlay -->
-    <div id="bannedOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,2,5,0.96); z-index:99998; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-        <div class="cyber-box" style="border-color:#ff0055; box-shadow:0 0 50px rgba(255,0,85,0.7); max-width:480px; width:100%;">
-            <h1 style="color:#ff0055; font-size:30px; text-shadow:0 0 15px #ff0055; margin-bottom:15px;">🚫 ACCESS RESTRICTED 🚫</h1>
-            <p id="bannedReasonText" style="color:#ff88aa; font-size:15px; margin-bottom:25px; line-height:1.6;">Your account has been restricted or banned from Cyber Store.</p>
+        <!-- Order Management Table -->
+        <h3 style="color: var(--neon-purple); margin-bottom: 15px;">📦 Live Customer Orders</h3>
+        <div style="overflow-x: auto; max-height: 400px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #444; color: #b39ddb;">
+                        <th style="padding: 10px;">Order ID</th>
+                        <th style="padding: 10px;">Phone</th>
+                        <th style="padding: 10px;">Total</th>
+                        <th style="padding: 10px;">UTR</th>
+                        <th style="padding: 10px;">Status</th>
+                        <th style="padding: 10px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminOrdersTableBody">
+                    <tr><td colspan="6" style="padding: 15px; text-align: center; color: #888;">Loading real-time orders...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Custom In-Website Message Modal -->
-    <div id="cyberMsgModal" class="modal hidden">
-        <div class="modal-content cyber-box" style="max-width:400px; text-align:center;">
-            <h3 id="cyberMsgTitle" style="color:var(--neon-violet); margin-bottom:12px;">Cyber Notice</h3>
-            <p id="cyberMsgText" style="font-size:14px; color:#d1c4e9; margin-bottom:20px; line-height:1.6;"></p>
-            <button id="cyberMsgCloseBtn" class="cyber-btn full-width">OK</button>
-        </div>
-    </div>
-
-    <nav class="navbar">
-        <h1 class="logo">CYBER <span class="neon-text">STORE</span></h1>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <button id="openCartBtn" class="cyber-btn" style="position: relative; padding: 8px 14px; font-size: 13px;">
-                🛒 Cart <span id="cartBadge" style="background: var(--neon-purple); color:#fff; border-radius:50%; padding:2px 6px; font-size:10px; margin-left:4px;">0</span>
-            </button>
-            <button id="loginBtn" class="cyber-btn" style="padding: 8px 14px; font-size: 13px;">Login / Sign Up</button>
-        </div>
-    </nav>
-
-    <!-- High-End Aesthetic Hero Section (No Cheap Posters) -->
-    <header class="hero" style="padding: 50px 20px 30px 20px;">
-        <div class="hero-3d-wrapper cyber-box" style="max-width: 800px; margin: 0 auto; padding: 40px; border-color: rgba(176,38,255,0.4);">
-            <h1 class="hero-title" style="font-size: 38px; background: linear-gradient(135deg, #fff, #b026ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">QUANTUM DIGITAL TERMINAL</h1>
-            <p class="hero-subtitle" style="font-size: 15px; color: #d1c4e9; margin-top: 10px;">Instant Automated Subscriptions & High-Speed Social Velocity</p>
-        </div>
-    </header>
-
-    <!-- Window 1: Cart Modal -->
-    <div id="cartModal" class="modal hidden">
-        <div class="modal-content cyber-box checkout-box" style="max-width: 480px;">
-            <span class="close-btn" id="closeCartModal">&times;</span>
-            <h2>Your Quantum Cart</h2>
-            
-            <div id="cartItemsContainer" style="margin: 15px 0; max-height: 180px; overflow-y: auto; font-size: 13px;">
-                <p style="color: #888;">Your cart is empty.</p>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="promoCodeInput" placeholder="Enter Promo Code (Optional)" class="cyber-input" style="margin-bottom: 0; text-transform: uppercase;">
-                <button id="applyPromoBtn" class="cyber-btn" style="width: auto; padding: 0 15px;">Apply</button>
-            </div>
-            <p id="promoFeedback" style="font-size: 12px; margin-bottom: 15px; color: var(--success-color);"></p>
-
-            <div style="text-align: right; margin-bottom: 15px;">
-                <p>Subtotal: <span id="cartSubtotal">Rs. 0</span></p>
-                <p style="font-size: 20px; font-weight: bold; color: var(--neon-violet);">Total: Rs. <span id="cartTotalPrice">0</span></p>
-            </div>
-
-            <button id="proceedToCheckoutBtn" class="cyber-btn full-width">Proceed to Checkout</button>
-
-            <!-- Tiny T&C Notice with External Redirect -->
-            <div style="font-size: 9px; color: #777777; text-align: center; margin-top: 12px; line-height: 1.4;">
-                *By clicking Proceed to checkout you Accept Our terms and conditions <a href="https://terms-cyberott.netlify.app" target="_blank" style="color: var(--neon-purple); text-decoration: underline;">See terms</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Window 2: Checkout & Payment Modal -->
-    <div id="paymentModal" class="modal hidden">
-        <div class="modal-content cyber-box checkout-box" style="max-width: 480px;">
-            <span class="close-btn" id="closePaymentModal">&times;</span>
-            <h2>Secure Checkout & Payment</h2>
-            
-            <div style="margin: 15px 0;">
-                <label style="font-size: 11px; color: var(--neon-purple); display: block; margin-bottom: 5px;">Indian Mobile Number (Required for Delivery):</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" value="+91" disabled class="cyber-input" style="width: 70px; text-align: center; margin-bottom:0;">
-                    <input type="tel" id="customerPhone" placeholder="10-digit mobile number" maxlength="10" class="cyber-input" style="margin-bottom:0;">
-                </div>
-            </div>
-
-            <div class="qr-container-styled" style="margin: 15px 0;">
-                <div class="qr-glow-frame">
-                    <img id="dynamicQrImg" src="" alt="UPI QR Code">
-                </div>
-                <p class="upi-id-badge">Scan via GPay / PhonePe / Paytm<br><b>UPI ID: cyberpratik@fam</b></p>
-            </div>
-
-            <div class="checkout-form">
-                <input type="text" id="utrInput" placeholder="Enter 12-digit UTR / Transaction ID" class="cyber-input">
-                <button id="submitOrderBtn" class="cyber-btn full-width">Submit Order & Mark Pending</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Auth & Profile Modal -->
-    <div id="authModal" class="modal hidden">
-        <div class="modal-content cyber-box">
-            <span class="close-btn" id="closeModal">&times;</span>
-            <h2 id="modalTitle">Access Terminal</h2>
-            
-            <div id="loginStep" class="auth-panel">
-                <button class="google-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Continue with Google</button>
-                <div class="divider"><span>OR</span></div>
-                <input type="email" id="authEmail" placeholder="Enter Email Address" class="cyber-input">
-                <input type="password" id="authPassword" placeholder="Enter Password" class="cyber-input">
-                <button id="emailPassLoginBtn" class="cyber-btn full-width">Login / Sign Up</button>
-            </div>
-
-            <div id="profileStep" class="auth-panel hidden">
-                <h3>Complete Profile</h3>
-                <p class="checkout-subtitle" style="margin-bottom: 15px;">Please provide your details</p>
-                <input type="text" id="profileName" placeholder="Full Name (Required)" class="cyber-input">
-                <label style="font-size: 11px; color: var(--neon-purple); display:block; margin-bottom:5px;">Date of Birth:</label>
-                <input type="date" id="profileDob" class="cyber-input">
-                <button id="saveProfileBtn" class="cyber-btn full-width">Save Profile & Enter Store</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Profile & Order History Dashboard Modal -->
-    <div id="userProfileModal" class="modal hidden">
-        <div class="modal-content cyber-box">
-            <span class="close-btn" id="closeUserProfile">&times;</span>
-            <h2>User Command Center</h2>
-            <div class="user-info-box" style="margin: 15px 0; font-size: 14px; line-height: 1.6;">
-                <p><b>6-Digit User ID:</b> <span id="dashSixId" style="color: var(--neon-violet); font-weight:bold;">-</span></p>
-                <p><b>Name:</b> <span id="dashName">-</span></p>
-                <p><b>Email:</b> <span id="dashEmail">-</span></p>
-                <p><b>Date of Birth:</b> <span id="dashDob">-</span></p>
-            </div>
-            <h3 style="margin-top: 20px; color: var(--neon-purple);">Your Order History</h3>
-            <div id="userOrdersList" style="max-height: 200px; overflow-y: auto; margin-top: 10px; font-size: 13px;">
-                <p style="color: #888;">Loading your transaction records...</p>
-            </div>
-            <button id="logoutBtn" class="cyber-btn full-width" style="margin-top: 20px; color: var(--danger-color); border-color: var(--danger-color);">Disconnect / Logout</button>
-        </div>
-    </div>
-
-    <!-- Products Grid -->
-    <main class="container">
-        <section class="grid" id="productsContainer">
-            <div class="card cyber-box" data-name="Netflix" data-price="100" data-require-email="true">
-                <i class="fa-solid fa-n brand-icon" style="color: #E50914;"></i>
-                <h3>Netflix</h3>
-                <p class="price">Rs. 100</p>
-                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
-                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
-                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
-            </div>
-
-            <div class="card cyber-box" data-name="Prime Video" data-price="59" data-require-email="true">
-                <i class="fab fa-amazon brand-icon" style="color: #00A8E1;"></i>
-                <h3>Prime Video</h3>
-                <p class="price">Rs. 59</p>
-                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
-                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
-                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
-            </div>
-
-            <div class="card cyber-box" data-name="Crunchyroll" data-price="29" data-require-email="true">
-                <i class="fas fa-tv brand-icon" style="color: #F47521;"></i>
-                <h3>Crunchyroll</h3>
-                <p class="price">Rs. 29</p>
-                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
-                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
-                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
-            </div>
-
-            <div class="card cyber-box" data-name="YouTube Premium" data-price="49" data-require-email="true">
-                <i class="fab fa-youtube brand-icon" style="color: #FF0000;"></i>
-                <h3>YouTube Premium</h3>
-                <p class="price">Rs. 49</p>
-                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
-                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
-                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
-            </div>
-
-            <div class="card cyber-box" data-name="Canva Premium" data-price="29" data-require-email="false">
-                <i class="fas fa-palette brand-icon" style="color: #00C4CC;"></i>
-                <h3>Canva Premium</h3>
-                <p class="price">Rs. 29</p>
-                <p class="desc">Provided by the company. 24/7 customer support, 100% replacement warranty.</p>
-                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
-            </div>
-
-            <div class="card cyber-box" data-name="Spotify Premium" data-price="69" data-require-email="true" id="spotifyCard">
-                <i class="fab fa-spotify brand-icon" style="color: #1DB954;"></i>
-                <h3>Spotify Premium</h3>
-                <select class="cyber-input" id="spotifyPlan">
-                    <option value="69">1 Month - Rs. 69</option>
-                    <option value="89">3 Months - Rs. 89</option>
-                </select>
-                <p class="desc">Provided in customer's own email. 24/7 customer support.</p>
-                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
-                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
-            </div>
-        </section>
-
-        <!-- Instagram Section -->
-        <section class="insta-section cyber-box" data-name="Instagram Followers">
-            <i class="fab fa-instagram brand-icon insta-gradient"></i>
-            <h3>Instagram Followers</h3>
-            <p class="desc">Min: 100 | Max: 75,000 followers. Rate: ₹60 per 1,000 followers (10% extra OFF for orders above 1,000!).</p>
-            <input type="number" id="instaCount" class="cyber-input" min="100" max="75000" value="100">
-            <p class="price">Total Price: Rs. <span id="instaPrice">6</span></p>
-            <input type="text" id="instaUsername" placeholder="Instagram Username (Required)" class="cyber-input">
-            <button class="cyber-btn full-width" id="instaBuyTrigger">Boost Instagram</button>
-        </section>
-    </main>
-
-    <!-- Support Floating Button -->
-    <button id="aiSupportFloatBtn" class="support-float-btn" title="Support & AI Chat">
-        <i class="fas fa-robot"></i>
-        <span>Support</span>
-    </button>
-
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          emailjs.init("64kQj2u6YG4zwaIzN");
-       })();
-    </script>
-
-    <!-- Firebase Compatibility Scripts -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <!-- Voiceflow Chat Widget Script & Custom Support Trigger -->
-    <script type="text/javascript">
-      (function(d, t) {
-          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-          v.onload = function() {
-            window.voiceflow.chat.load({
-              verify: { projectID: '6a781686163f49d0c15784eb' },
-              url: 'https://general-runtime.voiceflow.com',
-              voice: {
-                url: "https://runtime-api.voiceflow.com"
-              }
-            });
-          }
-          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
-      })(document, 'script');
-
-      document.addEventListener("DOMContentLoaded", () => {
-          const supportBtn = document.getElementById('aiSupportFloatBtn');
-          if (supportBtn) {
-              supportBtn.addEventListener('click', () => {
-                  if (window.voiceflow && window.voiceflow.chat) {
-                      window.voiceflow.chat.open();
-                  }
-              });
-          }
-      });
-    </script>
-
-    <script src="app.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
