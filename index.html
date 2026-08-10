@@ -15,7 +15,7 @@
 
     <!-- Live Admin Announcement & Event / Coupon Ticker Bar -->
     <div id="liveEventTicker" style="background: linear-gradient(90deg, #7000ff, #b026ff, #ff0055); color: #fff; padding: 8px 15px; font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; position: relative; z-index: 1001; box-shadow: 0 0 15px rgba(176,38,255,0.4);">
-        <marquee scrollamount="5" id="tickerTextContent">⚡ WELCOME TO CYBER STORE | Use Code <span style="color:#00ff66;">CYBER10</span> for instant savings! | Premium Streaming & Social Boosts Active 24/7 ⚡</marquee>
+        <marquee scrollamount="5" id="tickerTextContent">⚡ WELCOME TO CYBER STORE | Use Code <span style="color:#00ff66;">CYBER10</span> or <span style="color:#00ff66;">WELCOME50</span> for instant savings! | Premium Streaming & Social Boosts Active 24/7 ⚡</marquee>
     </div>
 
     <!-- Banned / Suspended Full-Screen Red Neon Overlay -->
@@ -45,7 +45,7 @@
         </div>
     </nav>
 
-    <!-- High-End Aesthetic Hero Section (No Cheap Posters) -->
+    <!-- High-End Aesthetic Hero Section -->
     <header class="hero" style="padding: 50px 20px 30px 20px;">
         <div class="hero-3d-wrapper cyber-box" style="max-width: 800px; margin: 0 auto; padding: 40px; border-color: rgba(176,38,255,0.4);">
             <h1 class="hero-title" style="font-size: 38px; background: linear-gradient(135deg, #fff, #b026ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">QUANTUM DIGITAL TERMINAL</h1>
@@ -83,7 +83,7 @@
         </div>
     </div>
 
-    <!-- Window 2: Checkout & Payment Modal -->
+    <!-- Window 2: Checkout & Payment Modal (Professional Clean QR Code Layout) -->
     <div id="paymentModal" class="modal hidden">
         <div class="modal-content cyber-box checkout-box" style="max-width: 480px;">
             <span class="close-btn" id="closePaymentModal">&times;</span>
@@ -97,11 +97,12 @@
                 </div>
             </div>
 
-            <div class="qr-container-styled" style="margin: 15px 0;">
-                <div class="qr-glow-frame">
-                    <img id="dynamicQrImg" src="" alt="UPI QR Code">
+            <div class="qr-container-styled" style="margin: 15px 0; text-align: center; background: rgba(5,2,10,0.6); padding: 15px; border-radius: 10px; border: 1px solid rgba(176,38,255,0.3);">
+                <div class="qr-glow-frame" style="display: inline-block; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 0 20px rgba(176,38,255,0.4);">
+                    <!-- Professional Static QR Code Wrapper -->
+                    <img id="dynamicQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=cyberpratik@fam&pn=CyberStore" alt="UPI QR Code" style="width: 160px; height: 160px; display: block;">
                 </div>
-                <p class="upi-id-badge">Scan via GPay / PhonePe / Paytm<br><b>UPI ID: cyberpratik@fam</b></p>
+                <p class="upi-id-badge" style="margin-top: 10px; font-size: 13px; color: #d1c4e9;">Scan via GPay / PhonePe / Paytm<br><b style="color: var(--neon-purple);">UPI ID: cyberpratik@fam</b></p>
             </div>
 
             <div class="checkout-form">
@@ -118,8 +119,8 @@
             <h2 id="modalTitle">Access Terminal</h2>
             
             <div id="loginStep" class="auth-panel">
-                <button class="google-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Continue with Google</button>
-                <div class="divider"><span>OR</span></div>
+                <button class="cyber-btn full-width" id="googleLoginBtn" style="background: #db4437; margin-bottom: 15px;"><i class="fab fa-google" style="margin-right: 8px;"></i> Continue with Google</button>
+                <div class="divider" style="text-align: center; margin: 15px 0; color: #888; font-size: 12px;"><span>OR</span></div>
                 <input type="email" id="authEmail" placeholder="Enter Email Address" class="cyber-input">
                 <input type="password" id="authPassword" placeholder="Enter Password" class="cyber-input">
                 <button id="emailPassLoginBtn" class="cyber-btn full-width">Login / Sign Up</button>
@@ -127,7 +128,7 @@
 
             <div id="profileStep" class="auth-panel hidden">
                 <h3>Complete Profile</h3>
-                <p class="checkout-subtitle" style="margin-bottom: 15px;">Please provide your details</p>
+                <p class="checkout-subtitle" style="margin-bottom: 15px; font-size: 13px; color: #b39ddb;">Please provide your details to enter</p>
                 <input type="text" id="profileName" placeholder="Full Name (Required)" class="cyber-input">
                 <label style="font-size: 11px; color: var(--neon-purple); display:block; margin-bottom:5px;">Date of Birth:</label>
                 <input type="date" id="profileDob" class="cyber-input">
