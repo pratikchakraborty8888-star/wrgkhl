@@ -2,282 +2,278 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Store | Master Command Center (Admin)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cyber Store | Premium OTTs & Boosts</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body style="background: #05020a; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px;">
-    
-    <div class="container" style="max-width: 950px; margin: 0 auto;">
-        <header style="text-align: center; margin-bottom: 30px;">
-            <h1 class="logo" style="font-size: 32px;">CYBER <span class="neon-text">ADMIN COMMAND</span></h1>
-            <p style="color: #b39ddb; font-size: 14px;">Full Master Control Terminal</p>
-        </header>
+<body>
+    <!-- 8D Immersive Background Energy Orbs -->
+    <div class="cyber-orb orb-1"></div>
+    <div class="cyber-orb orb-2"></div>
+    <div class="cyber-orb orb-3"></div>
 
-        <!-- SECTION 1: Order Management & Order ID Search -->
-        <section class="cyber-box" style="margin-bottom: 30px; border-color: var(--neon-violet);">
-            <h3 style="color: var(--neon-violet); margin-bottom: 15px;"><i class="fas fa-search"></i> Search Order by Order ID</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="adminOrderSearchInput" placeholder="Enter Order ID (e.g. #ORDER9X4K2)" class="cyber-input" style="margin-bottom: 0; text-transform: uppercase;">
-                <button id="adminSearchOrderBtn" class="cyber-btn" style="width: auto; padding: 0 25px;">Search</button>
-            </div>
-            <div id="adminSearchResultContainer" style="font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
-                <p style="color: #888;">Enter an Order ID above and click search to view order details.</p>
-            </div>
-
-            <h3 style="color: var(--success-color); margin-bottom: 15px; border-top: 1px dashed #333; padding-top: 15px;"><i class="fas fa-receipt"></i> Recent Customer Orders & UTR Verification</h3>
-            <div id="adminOrdersContainer" style="max-height: 350px; overflow-y: auto; font-size: 13px;">
-                <p style="color: #888;">Loading orders from Firestore...</p>
-            </div>
-        </section>
-
-        <!-- SECTION 2: User Management & Control (Ban / Suspend / Notices) -->
-        <section class="cyber-box" style="margin-bottom: 30px; border-color: #ff0055;">
-            <h3 style="color: #ff0055; margin-bottom: 15px;"><i class="fas fa-users-cog"></i> User Command & Moderation</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="adminUserSearchInput" placeholder="Enter User Email or 6-Digit ID" class="cyber-input" style="margin-bottom: 0;">
-                <button id="adminSearchUserBtn" class="cyber-btn" style="width: auto; padding: 0 25px; background: #ff0055; border-color: #ff0055; color: #fff;">Lookup User</button>
-            </div>
-            <div id="adminUserResultContainer" style="font-size: 13px; line-height: 1.6;">
-                <p style="color: #888;">Lookup a user to manage ban status, suspension, or send in-website notices.</p>
-            </div>
-        </section>
-
-        <!-- SECTION 3: Dynamic Product Management -->
-        <section class="cyber-box" style="margin-bottom: 30px; border-color: var(--neon-purple);">
-            <h3 style="color: var(--neon-purple); margin-bottom: 15px;"><i class="fas fa-box-open"></i> Add New Product to Storefront</h3>
-            <input type="text" id="newProdName" placeholder="Product Name (e.g. Disney+ Hotstar)" class="cyber-input">
-            <input type="number" id="newProdPrice" placeholder="Price in Rupees (e.g. 49)" class="cyber-input">
-            <input type="text" id="newProdDesc" placeholder="Product Description" class="cyber-input">
-            <input type="text" id="newProdLogo" placeholder="Logo Icon Class or Image URL (Optional)" class="cyber-input">
-            <button id="addProductBtn" class="cyber-btn full-width">Add Product to Store</button>
-        </section>
-
-        <!-- SECTION 4: Publish Event / Promotional Banner -->
-        <section class="cyber-box">
-            <h3 style="color: #00ffff; margin-bottom: 15px;"><i class="fas fa-bullhorn"></i> Publish Event / Poster Banner</h3>
-            <input type="text" id="eventTitle" placeholder="Event Title (e.g. Special Welcome Offer)" class="cyber-input">
-            <textarea id="eventDesc" placeholder="Event Description / Details" class="cyber-input" style="height: 80px; resize: none;"></textarea>
-            <input type="text" id="eventPosterUrl" placeholder="Poster Image URL or SVG code link (Optional)" class="cyber-input">
-            <button id="publishEventBtn" class="cyber-btn full-width" style="border-color: #00ffff; color: #00ffff;">Publish Event Banner</button>
-        </section>
+    <!-- Live Admin Announcement & Event / Coupon Ticker Bar -->
+    <div id="liveEventTicker" style="background: linear-gradient(90deg, #7000ff, #b026ff, #ff0055); color: #fff; padding: 8px 15px; font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; position: relative; z-index: 1001; box-shadow: 0 0 15px rgba(176,38,255,0.4);">
+        <marquee scrollamount="5" id="tickerTextContent">⚡ WELCOME TO CYBER STORE | Use Code <span style="color:#00ff66;">CYBER10</span> for instant savings! | Premium Streaming & Social Boosts Active 24/7 ⚡</marquee>
     </div>
+
+    <!-- Banned / Suspended Full-Screen Red Neon Overlay -->
+    <div id="bannedOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,2,5,0.96); z-index:99998; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+        <div class="cyber-box" style="border-color:#ff0055; box-shadow:0 0 50px rgba(255,0,85,0.7); max-width:480px; width:100%;">
+            <h1 style="color:#ff0055; font-size:30px; text-shadow:0 0 15px #ff0055; margin-bottom:15px;">🚫 ACCESS RESTRICTED 🚫</h1>
+            <p id="bannedReasonText" style="color:#ff88aa; font-size:15px; margin-bottom:25px; line-height:1.6;">Your account has been restricted or banned from Cyber Store.</p>
+        </div>
+    </div>
+
+    <!-- Custom In-Website Message Modal -->
+    <div id="cyberMsgModal" class="modal hidden">
+        <div class="modal-content cyber-box" style="max-width:400px; text-align:center;">
+            <h3 id="cyberMsgTitle" style="color:var(--neon-violet); margin-bottom:12px;">Cyber Notice</h3>
+            <p id="cyberMsgText" style="font-size:14px; color:#d1c4e9; margin-bottom:20px; line-height:1.6;"></p>
+            <button id="cyberMsgCloseBtn" class="cyber-btn full-width">OK</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <h1 class="logo">CYBER <span class="neon-text">STORE</span></h1>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button id="openCartBtn" class="cyber-btn" style="position: relative; padding: 8px 14px; font-size: 13px;">
+                🛒 Cart <span id="cartBadge" style="background: var(--neon-purple); color:#fff; border-radius:50%; padding:2px 6px; font-size:10px; margin-left:4px;">0</span>
+            </button>
+            <button id="loginBtn" class="cyber-btn" style="padding: 8px 14px; font-size: 13px;">Login / Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- High-End Aesthetic Hero Section (No Cheap Posters) -->
+    <header class="hero" style="padding: 50px 20px 30px 20px;">
+        <div class="hero-3d-wrapper cyber-box" style="max-width: 800px; margin: 0 auto; padding: 40px; border-color: rgba(176,38,255,0.4);">
+            <h1 class="hero-title" style="font-size: 38px; background: linear-gradient(135deg, #fff, #b026ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">QUANTUM DIGITAL TERMINAL</h1>
+            <p class="hero-subtitle" style="font-size: 15px; color: #d1c4e9; margin-top: 10px;">Instant Automated Subscriptions & High-Speed Social Velocity</p>
+        </div>
+    </header>
+
+    <!-- Window 1: Cart Modal -->
+    <div id="cartModal" class="modal hidden">
+        <div class="modal-content cyber-box checkout-box" style="max-width: 480px;">
+            <span class="close-btn" id="closeCartModal">&times;</span>
+            <h2>Your Quantum Cart</h2>
+            
+            <div id="cartItemsContainer" style="margin: 15px 0; max-height: 180px; overflow-y: auto; font-size: 13px;">
+                <p style="color: #888;">Your cart is empty.</p>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="promoCodeInput" placeholder="Enter Promo Code (Optional)" class="cyber-input" style="margin-bottom: 0; text-transform: uppercase;">
+                <button id="applyPromoBtn" class="cyber-btn" style="width: auto; padding: 0 15px;">Apply</button>
+            </div>
+            <p id="promoFeedback" style="font-size: 12px; margin-bottom: 15px; color: var(--success-color);"></p>
+
+            <div style="text-align: right; margin-bottom: 15px;">
+                <p>Subtotal: <span id="cartSubtotal">Rs. 0</span></p>
+                <p style="font-size: 20px; font-weight: bold; color: var(--neon-violet);">Total: Rs. <span id="cartTotalPrice">0</span></p>
+            </div>
+
+            <button id="proceedToCheckoutBtn" class="cyber-btn full-width">Proceed to Checkout</button>
+
+            <!-- Tiny T&C Notice with External Redirect -->
+            <div style="font-size: 9px; color: #777777; text-align: center; margin-top: 12px; line-height: 1.4;">
+                *By clicking Proceed to checkout you Accept Our terms and conditions <a href="https://terms-cyberott.netlify.app" target="_blank" style="color: var(--neon-purple); text-decoration: underline;">See terms</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Window 2: Checkout & Payment Modal -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-content cyber-box checkout-box" style="max-width: 480px;">
+            <span class="close-btn" id="closePaymentModal">&times;</span>
+            <h2>Secure Checkout & Payment</h2>
+            
+            <div style="margin: 15px 0;">
+                <label style="font-size: 11px; color: var(--neon-purple); display: block; margin-bottom: 5px;">Indian Mobile Number (Required for Delivery):</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" value="+91" disabled class="cyber-input" style="width: 70px; text-align: center; margin-bottom:0;">
+                    <input type="tel" id="customerPhone" placeholder="10-digit mobile number" maxlength="10" class="cyber-input" style="margin-bottom:0;">
+                </div>
+            </div>
+
+            <div class="qr-container-styled" style="margin: 15px 0;">
+                <div class="qr-glow-frame">
+                    <img id="dynamicQrImg" src="" alt="UPI QR Code">
+                </div>
+                <p class="upi-id-badge">Scan via GPay / PhonePe / Paytm<br><b>UPI ID: cyberpratik@fam</b></p>
+            </div>
+
+            <div class="checkout-form">
+                <input type="text" id="utrInput" placeholder="Enter 12-digit UTR / Transaction ID" class="cyber-input">
+                <button id="submitOrderBtn" class="cyber-btn full-width">Submit Order & Mark Pending</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth & Profile Modal -->
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content cyber-box">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2 id="modalTitle">Access Terminal</h2>
+            
+            <div id="loginStep" class="auth-panel">
+                <button class="google-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Continue with Google</button>
+                <div class="divider"><span>OR</span></div>
+                <input type="email" id="authEmail" placeholder="Enter Email Address" class="cyber-input">
+                <input type="password" id="authPassword" placeholder="Enter Password" class="cyber-input">
+                <button id="emailPassLoginBtn" class="cyber-btn full-width">Login / Sign Up</button>
+            </div>
+
+            <div id="profileStep" class="auth-panel hidden">
+                <h3>Complete Profile</h3>
+                <p class="checkout-subtitle" style="margin-bottom: 15px;">Please provide your details</p>
+                <input type="text" id="profileName" placeholder="Full Name (Required)" class="cyber-input">
+                <label style="font-size: 11px; color: var(--neon-purple); display:block; margin-bottom:5px;">Date of Birth:</label>
+                <input type="date" id="profileDob" class="cyber-input">
+                <button id="saveProfileBtn" class="cyber-btn full-width">Save Profile & Enter Store</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile & Order History Dashboard Modal -->
+    <div id="userProfileModal" class="modal hidden">
+        <div class="modal-content cyber-box">
+            <span class="close-btn" id="closeUserProfile">&times;</span>
+            <h2>User Command Center</h2>
+            <div class="user-info-box" style="margin: 15px 0; font-size: 14px; line-height: 1.6;">
+                <p><b>6-Digit User ID:</b> <span id="dashSixId" style="color: var(--neon-violet); font-weight:bold;">-</span></p>
+                <p><b>Name:</b> <span id="dashName">-</span></p>
+                <p><b>Email:</b> <span id="dashEmail">-</span></p>
+                <p><b>Date of Birth:</b> <span id="dashDob">-</span></p>
+            </div>
+            <h3 style="margin-top: 20px; color: var(--neon-purple);">Your Order History</h3>
+            <div id="userOrdersList" style="max-height: 200px; overflow-y: auto; margin-top: 10px; font-size: 13px;">
+                <p style="color: #888;">Loading your transaction records...</p>
+            </div>
+            <button id="logoutBtn" class="cyber-btn full-width" style="margin-top: 20px; color: var(--danger-color); border-color: var(--danger-color);">Disconnect / Logout</button>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <main class="container">
+        <section class="grid" id="productsContainer">
+            <div class="card cyber-box" data-name="Netflix" data-price="100" data-require-email="true">
+                <i class="fa-solid fa-n brand-icon" style="color: #E50914;"></i>
+                <h3>Netflix</h3>
+                <p class="price">Rs. 100</p>
+                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
+                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
+                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
+            </div>
+
+            <div class="card cyber-box" data-name="Prime Video" data-price="59" data-require-email="true">
+                <i class="fab fa-amazon brand-icon" style="color: #00A8E1;"></i>
+                <h3>Prime Video</h3>
+                <p class="price">Rs. 59</p>
+                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
+                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
+                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
+            </div>
+
+            <div class="card cyber-box" data-name="Crunchyroll" data-price="29" data-require-email="true">
+                <i class="fas fa-tv brand-icon" style="color: #F47521;"></i>
+                <h3>Crunchyroll</h3>
+                <p class="price">Rs. 29</p>
+                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
+                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
+                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
+            </div>
+
+            <div class="card cyber-box" data-name="YouTube Premium" data-price="49" data-require-email="true">
+                <i class="fab fa-youtube brand-icon" style="color: #FF0000;"></i>
+                <h3>YouTube Premium</h3>
+                <p class="price">Rs. 49</p>
+                <p class="desc">Provided in customer's own email. 24/7 customer support, 100% replacement warranty.</p>
+                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
+                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
+            </div>
+
+            <div class="card cyber-box" data-name="Canva Premium" data-price="29" data-require-email="false">
+                <i class="fas fa-palette brand-icon" style="color: #00C4CC;"></i>
+                <h3>Canva Premium</h3>
+                <p class="price">Rs. 29</p>
+                <p class="desc">Provided by the company. 24/7 customer support, 100% replacement warranty.</p>
+                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
+            </div>
+
+            <div class="card cyber-box" data-name="Spotify Premium" data-price="69" data-require-email="true" id="spotifyCard">
+                <i class="fab fa-spotify brand-icon" style="color: #1DB954;"></i>
+                <h3>Spotify Premium</h3>
+                <select class="cyber-input" id="spotifyPlan">
+                    <option value="69">1 Month - Rs. 69</option>
+                    <option value="89">3 Months - Rs. 89</option>
+                </select>
+                <p class="desc">Provided in customer's own email. 24/7 customer support.</p>
+                <input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">
+                <button class="cyber-btn full-width buy-trigger">Buy Now</button>
+            </div>
+        </section>
+
+        <!-- Instagram Section -->
+        <section class="insta-section cyber-box" data-name="Instagram Followers">
+            <i class="fab fa-instagram brand-icon insta-gradient"></i>
+            <h3>Instagram Followers</h3>
+            <p class="desc">Min: 100 | Max: 75,000 followers. Rate: ₹60 per 1,000 followers (10% extra OFF for orders above 1,000!).</p>
+            <input type="number" id="instaCount" class="cyber-input" min="100" max="75000" value="100">
+            <p class="price">Total Price: Rs. <span id="instaPrice">6</span></p>
+            <input type="text" id="instaUsername" placeholder="Instagram Username (Required)" class="cyber-input">
+            <button class="cyber-btn full-width" id="instaBuyTrigger">Boost Instagram</button>
+        </section>
+    </main>
+
+    <!-- Support Floating Button -->
+    <button id="aiSupportFloatBtn" class="support-float-btn" title="Support & AI Chat">
+        <i class="fas fa-robot"></i>
+        <span>Support</span>
+    </button>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("64kQj2u6YG4zwaIzN");
+       })();
+    </script>
 
     <!-- Firebase Compatibility Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyDUowN2gw6HvlBooZw2VDbroabjGhjMlRM",
-          authDomain: "cyber-store-b2668.firebaseapp.com",
-          projectId: "cyber-store-b2668",
-          storageBucket: "cyber-store-b2668.firebasestorage.app",
-          messagingSenderId: "1014814260411",
-          appId: "1:1014814260411:web:c7adff1a39026e8fd53d9e",
-          measurementId: "G-4HP0L2KV1Q"
-        };
+    <!-- Voiceflow Chat Widget Script & Custom Support Trigger -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '6a781686163f49d0c15784eb' },
+              url: 'https://general-runtime.voiceflow.com',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        document.addEventListener("DOMContentLoaded", () => {
-            // --- 1. SEARCH ORDER BY ORDER ID ---
-            const searchInput = document.getElementById('adminOrderSearchInput');
-            const searchBtn = document.getElementById('adminSearchOrderBtn');
-            const searchResult = document.getElementById('adminSearchResultContainer');
-            const ordersContainer = document.getElementById('adminOrdersContainer');
-
-            if (searchBtn && searchInput) {
-                searchBtn.onclick = async () => {
-                    const queryId = searchInput.value.trim().toUpperCase();
-                    if (!queryId) { alert("Please enter a valid Order ID!"); return; }
-
-                    searchResult.innerHTML = "<p style='color: var(--neon-purple);'>Searching quantum database...</p>";
-
-                    try {
-                        let snap = await db.collection("orders").where("orderId", "==", queryId).get();
-                        if (snap.empty) {
-                            snap = await db.collection("orders").where("order_id", "==", queryId).get();
-                        }
-
-                        if (snap.empty) {
-                            searchResult.innerHTML = `<p style="color: #ff0055;">No order found with ID: <b>${queryId}</b></p>`;
-                        } else {
-                            searchResult.innerHTML = "";
-                            snap.forEach(doc => {
-                                const ord = doc.data();
-                                searchResult.innerHTML += renderOrderCard(doc.id, ord);
-                            });
-                        }
-                    } catch (err) {
-                        searchResult.innerHTML = `<p style="color: #ff0055;">Error searching database: ${err.message}</p>`;
-                    }
-                };
-            }
-
-            async function loadAllOrders() {
-                if (!ordersContainer) return;
-                try {
-                    const snap = await db.collection("orders").orderBy("createdAt", "desc").limit(20).get();
-                    ordersContainer.innerHTML = snap.empty ? "<p>No orders recorded yet.</p>" : "";
-                    snap.forEach(doc => {
-                        const ord = doc.data();
-                        ordersContainer.innerHTML += renderOrderCard(doc.id, ord);
-                    });
-                } catch(e) {
-                    ordersContainer.innerHTML = "<p style='color:#ff0055;'>Error loading orders.</p>";
-                }
-            }
-            loadAllOrders();
-
-            window.renderOrderCard = function(docId, ord) {
-                const oId = ord.orderId || ord.order_id || 'N/A';
-                const statusColor = ord.status === 'COMPLETED' ? '#00ff66' : '#ff0055';
-                return `
-                    <div class="cyber-box" style="padding: 12px; margin-bottom: 12px; background: rgba(22,10,36,0.6);">
-                        <p><b>Order ID:</b> <span style="color:var(--neon-violet); font-size:15px; font-weight:bold;">${oId}</span></p>
-                        <p><b>Customer Email:</b> ${ord.customerEmail || 'Guest'} | <b>Phone:</b> ${ord.customerPhone || 'N/A'}</p>
-                        <p><b>Products:</b> ${ord.product}</p>
-                        <p><b>Total Price:</b> Rs. ${ord.price} | <b>Free Gift:</b> ${ord.freeGift || 'None'}</p>
-                        <p><b>UTR / Transaction ID:</b> <span style="color: #00ffff; font-family:monospace; font-size:14px;">${ord.utrNumber}</span></p>
-                        <p><b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${ord.status}</span></p>
-                        <div style="margin-top: 10px; display: flex; gap: 10px;">
-                            <button onclick="updateOrderStatus('${docId}', 'COMPLETED')" class="cyber-btn" style="padding: 5px 12px; font-size: 11px; background: #00ff66; color: #000; border-color: #00ff66;">Mark Complete</button>
-                            <button onclick="updateOrderStatus('${docId}', 'CANCELLED')" class="cyber-btn" style="padding: 5px 12px; font-size: 11px; background: #ff0055; border-color: #ff0055;">Cancel Order</button>
-                        </div>
-                    </div>`;
-            };
-
-            window.updateOrderStatus = async function(docId, newStatus) {
-                try {
-                    await db.collection("orders").doc(docId).update({ status: newStatus });
-                    alert(`Order status updated to ${newStatus}!`);
-                    loadAllOrders();
-                } catch(e) {
-                    alert("Error updating order status.");
-                }
-            };
-
-            // --- 2. USER MANAGEMENT & MODERATION ---
-            const userSearchInput = document.getElementById('adminUserSearchInput');
-            const userSearchBtn = document.getElementById('adminSearchUserBtn');
-            const userResult = document.getElementById('adminUserResultContainer');
-
-            if (userSearchBtn && userSearchInput) {
-                userSearchBtn.onclick = async () => {
-                    const query = userSearchInput.value.trim();
-                    if (!query) { alert("Enter email or 6-digit ID!"); return; }
-
-                    userResult.innerHTML = "<p style='color: var(--neon-purple);'>Searching users...</p>";
-                    try {
-                        let snap = await db.collection("users").where("email", "==", query).get();
-                        if (snap.empty) {
-                            snap = await db.collection("users").where("sixDigitId", "==", query).get();
-                        }
-
-                        if (snap.empty) {
-                            userResult.innerHTML = `<p style="color:#ff0055;">No user found matching: <b>${query}</b></p>`;
-                        } else {
-                            userResult.innerHTML = "";
-                            snap.forEach(doc => {
-                                const u = doc.data();
-                                userResult.innerHTML += `
-                                    <div class="cyber-box" style="padding: 12px; background: rgba(22,10,36,0.6);">
-                                        <p><b>Name:</b> ${u.fullName} | <b>Email:</b> ${u.email}</p>
-                                        <p><b>6-Digit ID:</b> <span style="color:var(--neon-violet);">${u.sixDigitId}</span> | <b>Banned:</b> <span style="color:${u.banned?'#ff0055':'#00ff66'}">${u.banned? 'YES':'NO'}</span></p>
-                                        <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap:wrap;">
-                                            <button onclick="toggleBanUser('${doc.id}', ${!u.banned})" class="cyber-btn" style="padding: 5px 10px; font-size:11px; background:${u.banned?'#00ff66':'#ff0055'}; color:#000;">${u.banned?'Unban User':'Ban User'}</button>
-                                            <button onclick="sendAdminNotice('${doc.id}', 'WARNING')" class="cyber-btn" style="padding: 5px 10px; font-size:11px; background:#ffaa00; color:#000;">Send Warning</button>
-                                            <button onclick="sendAdminNotice('${doc.id}', 'BONUS')" class="cyber-btn" style="padding: 5px 10px; font-size:11px; background:#00ffff; color:#000;">Send Bonus Notice</button>
-                                        </div>
-                                    </div>`;
-                            });
-                        }
-                    } catch(e) {
-                        userResult.innerHTML = `<p style="color:#ff0055;">Error: ${e.message}</p>`;
-                    }
-                };
-            }
-
-            window.toggleBanUser = async function(uid, banStatus) {
-                const reason = banStatus ? prompt("Enter ban reason:") : "";
-                try {
-                    await db.collection("users").doc(uid).update({ banned: banStatus, banReason: reason || "Violation of terms" });
-                    alert(`User ban status updated!`);
-                } catch(e) { alert("Error updating ban status."); }
-            };
-
-            window.sendAdminNotice = async function(uid, type) {
-                const msg = prompt(`Enter message for ${type}:`);
-                if (!msg) return;
-                try {
-                    await db.collection("notices").add({
-                        userId: uid,
-                        type: type,
-                        message: msg,
-                        read: false,
-                        createdAt: new Date()
-                    });
-                    alert("Notice dispatched to user!");
-                } catch(e) { alert("Error sending notice."); }
-            };
-
-            // --- 3. DYNAMIC PRODUCT MANAGEMENT ---
-            const addProductBtn = document.getElementById('addProductBtn');
-            if (addProductBtn) {
-                addProductBtn.onclick = async () => {
-                    const name = document.getElementById('newProdName').value.trim();
-                    const price = parseFloat(document.getElementById('newProdPrice').value);
-                    const desc = document.getElementById('newProdDesc').value.trim();
-                    const logo = document.getElementById('newProdLogo').value.trim();
-
-                    if (!name || isNaN(price)) { alert("Product name and valid price are required!"); return; }
-
-                    try {
-                        await db.collection("products").add({
-                            name: name,
-                            price: price,
-                            desc: desc,
-                            logo: logo,
-                            createdAt: new Date()
-                        });
-                        alert("Product added to storefront successfully!");
-                        document.getElementById('newProdName').value = "";
-                        document.getElementById('newProdPrice').value = "";
-                        document.getElementById('newProdDesc').value = "";
-                        document.getElementById('newProdLogo').value = "";
-                    } catch(e) { alert("Error adding product."); }
-                };
-            }
-
-            // --- 4. PUBLISH EVENT BANNER ---
-            const publishEventBtn = document.getElementById('publishEventBtn');
-            if (publishEventBtn) {
-                publishEventBtn.onclick = async () => {
-                    const title = document.getElementById('eventTitle').value.trim();
-                    const desc = document.getElementById('eventDesc').value.trim();
-                    const poster = document.getElementById('eventPosterUrl').value.trim();
-
-                    if (!title || !desc) { alert("Title and description are required!"); return; }
-
-                    try {
-                        await db.collection("events").add({
-                            title: title,
-                            desc: desc,
-                            poster: poster,
-                            createdAt: new Date()
-                        });
-                        alert("Event banner published successfully!");
-                        document.getElementById('eventTitle').value = "";
-                        document.getElementById('eventDesc').value = "";
-                        document.getElementById('eventPosterUrl').value = "";
-                    } catch(e) { alert("Error publishing event."); }
-                };
-            }
-        });
+      document.addEventListener("DOMContentLoaded", () => {
+          const supportBtn = document.getElementById('aiSupportFloatBtn');
+          if (supportBtn) {
+              supportBtn.addEventListener('click', () => {
+                  if (window.voiceflow && window.voiceflow.chat) {
+                      window.voiceflow.chat.open();
+                  }
+              });
+          }
+      });
     </script>
+
+    <script src="app.js"></script>
 </body>
 </html>
