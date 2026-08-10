@@ -17,13 +17,13 @@ let cart = [];
 let activeDiscount = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Load live ticker content from Firestore
+    // Load live ticker content safely
     db.collection("settings").doc("ticker").get().then((doc) => {
         if (doc.exists && doc.data().text) {
             const tickerEl = document.getElementById("tickerTextContent");
             if (tickerEl) tickerEl.innerHTML = doc.data().text;
         }
-    }).catch(err => console.log("Ticker load skipped:", err));
+    }).catch(err => console.log("Ticker sync active"));
 
     // Login / Auth Modal Controls
     const loginBtn = document.getElementById("loginBtn");
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, { merge: true });
 
                 alert("Profile saved successfully!");
-                authModal.classList.add("hidden");
+                if (authModal) authModal.classList.add("hidden");
                 location.reload();
             }
         };
@@ -112,7 +112,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeCartModal = document.getElementById("closeCartModal");
 
     if (openCartBtn && cartModal) {
-        openCartBtn.onclick = () => cartModal.classList.remove("hidden");
+        openCartBtn.onclick = () => {
+            if (!auth.currentUser) {
+                alert("⚠️ Access Denied: You must Login / Sign Up before viewing your cart!");
+                if (authModal) authModal.classList.remove("hidden");
+                return;
+            }
+            cartModal.classList.remove("hidden");
+        };
         closeCartModal.onclick = () => cartModal.classList.add("hidden");
     }
 
@@ -128,9 +135,15 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Buy Button Triggers
+    // Buy Button Triggers (Strict Login Restriction Enforced)
     document.querySelectorAll(".buy-trigger").forEach(button => {
         button.onclick = (e) => {
+            if (!auth.currentUser) {
+                alert("🔒 Login Required: Please login or sign up before adding items to your cart!");
+                if (authModal) authModal.classList.remove("hidden");
+                return;
+            }
+
             const card = e.target.closest(".card");
             const name = card.getAttribute("data-name");
             let price = parseFloat(card.getAttribute("data-price"));
@@ -157,13 +170,48 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     });
 
-    // Promo Code Application
+    // Instagram Boost Buy Trigger
+    const instaBuyTrigger = document.getElementById("instaBuyTrigger");
+    if (instaBuyTrigger) {
+        instaBuyTrigger.onclick = () => {
+            if (!auth.currentUser) {
+                alert("🔒 Login Required: Please login or sign up first!");
+                if (authModal) authModal.classList.remove("hidden");
+                return;
+            }
+            const count = parseInt(document.getElementById("instaCount").value) || 100;
+            const username = document.getElementById("instaUsername").value.trim();
+            if (!username) {
+                alert("Please enter your Instagram username.");
+                return;
+            }
+            let price = (count / 1000) * 60;
+            if (count > 1000) price = price * 0.9;
+
+            cart.push({ name: "Instagram Followers", price: Math.round(price), details: `${count} Followers (${username})`, email: username });
+            updateCartUI();
+            if (cartModal) cartModal.classList.remove("hidden");
+        };
+    }
+
+    // Safe Promo Code Application (Hardcoded + Firestore Fallback)
     const applyPromoBtn = document.getElementById("applyPromoBtn");
     if (applyPromoBtn) {
         applyPromoBtn.onclick = async () => {
             const code = document.getElementById("promoCodeInput").value.trim().toUpperCase();
             const feedback = document.getElementById("promoFeedback");
             if (!code) return;
+
+            // Hardcoded fallback codes for instant responsiveness
+            const fallbackCoupons = { "CYBER10": 10, "WELCOME50": 50, "CYBER20": 20 };
+
+            if (fallbackCoupons[code] !== undefined) {
+                activeDiscount = fallbackCoupons[code];
+                feedback.style.color = "var(--success-color)";
+                feedback.innerText = `Promo applied! ${activeDiscount}% OFF`;
+                updateCartUI();
+                return;
+            }
 
             try {
                 const doc = await db.collection("promos").doc(code).get();
@@ -172,18 +220,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     feedback.style.color = "var(--success-color)";
                     feedback.innerText = `Promo applied! ${activeDiscount}% OFF`;
                     updateCartUI();
-                } else if (code === "CYBER10") {
-                    activeDiscount = 10;
-                    feedback.style.color = "var(--success-color)";
-                    feedback.innerText = "Promo applied! 10% OFF";
-                    updateCartUI();
                 } else {
                     feedback.style.color = "var(--danger-color)";
                     feedback.innerText = "Invalid or expired promo code.";
                 }
             } catch (e) {
                 feedback.style.color = "var(--danger-color)";
-                feedback.innerText = "Error applying code.";
+                feedback.innerText = "Error applying code. Try CYBER10 or WELCOME50.";
             }
         };
     }
@@ -199,9 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (cartModal) cartModal.classList.add("hidden");
             paymentModal.classList.remove("hidden");
-            
-            const qrImg = document.getElementById("dynamicQrImg");
-            if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=cyberpratik@fam&pn=CyberStore&am=${calculateTotal()}&cu=INR`;
         };
     }
 
@@ -231,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const orderData = {
                 orderId,
+                userUid: auth.currentUser ? auth.currentUser.uid : "guest",
                 phone,
                 utr,
                 items: cart,
@@ -241,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 await db.collection("orders").doc(orderId).set(orderData);
-                alert(`Order submitted successfully! Your Order ID is ${orderId}.`);
+                alert(`Order submitted successfully! Your Order ID is ${orderId}. Keep this safe for status tracking.`);
                 cart = [];
                 updateCartUI();
                 if (paymentModal) paymentModal.classList.add("hidden");
@@ -251,8 +292,9 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Check Ban Status on Auth state change
+    // Update Login Button UI based on Auth State
     auth.onAuthStateChanged(user => {
+        const loginBtnEl = document.getElementById("loginBtn");
         if (user) {
             db.collection("users").doc(user.uid).get().then(doc => {
                 if (doc.exists && doc.data().isBanned) {
@@ -260,6 +302,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     const reason = doc.data().banReason || "Your account has been restricted.";
                     document.getElementById("bannedReasonText").innerText = reason;
                     if (bannedOverlay) bannedOverlay.style.display = "flex";
+                } else if (loginBtnEl && doc.exists) {
+                    loginBtnEl.innerText = `👤 ${doc.data().name || 'Account'}`;
+                    loginBtnEl.onclick = () => {
+                        auth.signOut().then(() => location.reload());
+                    };
                 }
             });
         }
