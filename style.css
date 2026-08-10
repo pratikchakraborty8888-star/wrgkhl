@@ -1,0 +1,316 @@
+:root {
+    --bg-color: #030007;
+    --neon-purple: #b026ff;
+    --neon-violet: #7000ff;
+    --success-color: #00ff66;
+    --danger-color: #ff0055;
+    --text-color: #fff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* 8D Immersive Background Energy Orbs */
+.cyber-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.45;
+    animation: orbFloat 12s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+    width: 350px;
+    height: 350px;
+    background: rgba(176, 38, 255, 0.4);
+    top: -50px;
+    left: -50px;
+}
+
+.orb-2 {
+    width: 450px;
+    height: 450px;
+    background: rgba(0, 255, 255, 0.25);
+    bottom: 10%;
+    right: -100px;
+    animation-duration: 16s;
+}
+
+.orb-3 {
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 0, 128, 0.3);
+    top: 40%;
+    left: 30%;
+    animation-duration: 10s;
+}
+
+@keyframes orbFloat {
+    0% { transform: translateY(0px) scale(1); }
+    100% { transform: translateY(40px) scale(1.12); }
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(10, 3, 18, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(176, 38, 255, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #fff;
+}
+
+.neon-text {
+    color: var(--neon-purple);
+    text-shadow: 0 0 10px rgba(176, 38, 255, 0.6);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+    position: relative;
+}
+
+.hero-title {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+}
+
+.hero-subtitle {
+    color: #b39ddb;
+    font-size: 16px;
+}
+
+/* Glassmorphism Cyber Boxes & Cards */
+.cyber-box {
+    background: rgba(18, 8, 32, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(176, 38, 255, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(176, 38, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s, box-shadow 0.3s;
+}
+
+.card:hover, .cyber-box:hover {
+    transform: translateY(-6px) scale(1.01);
+    border-color: var(--neon-purple);
+    box-shadow: 0 12px 40px rgba(176, 38, 255, 0.35), inset 0 0 20px rgba(176, 38, 255, 0.2);
+}
+
+/* Containers & Grid */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--neon-purple);
+    margin-bottom: 10px;
+}
+
+.desc {
+    font-size: 13px;
+    color: #d1c4e9;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.brand-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+/* Inputs & Buttons */
+.cyber-input {
+    width: 100%;
+    background: rgba(5, 2, 10, 0.8);
+    border: 1px solid rgba(176, 38, 255, 0.3);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    outline: none;
+    font-size: 13px;
+    transition: border-color 0.2s;
+}
+
+.cyber-input:focus {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 10px rgba(176, 38, 255, 0.4);
+}
+
+.cyber-btn {
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-violet));
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+}
+
+.cyber-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(176, 38, 255, 0.6);
+}
+
+.full-width {
+    width: 100%;
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(3, 0, 7, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.modal.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #b39ddb;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+/* Instagram Section */
+.insta-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.insta-gradient {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Support Floating Button */
+.support-float-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, #b026ff, #7000ff);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    padding: 12px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 99999;
+    box-shadow: 0 0 25px rgba(176, 38, 255, 0.6);
+    animation: supportPulse 2s infinite;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.support-float-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 35px rgba(176, 38, 255, 0.9);
+}
+
+@keyframes supportPulse {
+    0% { box-shadow: 0 0 0 0 rgba(176, 38, 255, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(176, 38, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(176, 38, 255, 0); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+    .hero-title {
+        font-size: 28px !important;
+    }
+    .grid {
+        grid-template-columns: 1fr !important;
+        padding: 10px;
+    }
+    .support-float-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+}
