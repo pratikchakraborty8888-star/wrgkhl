@@ -1,12 +1,15 @@
+// Live Firebase Configuration for Cyber Store
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDUowN2gw6HvlBooZw2VDbroabjGhjMlRM",
+    authDomain: "cyber-store-b2668.firebaseapp.com",
+    projectId: "cyber-store-b2668",
+    storageBucket: "cyber-store-b2668.firebasestorage.app",
+    messagingSenderId: "1014814260411",
+    appId: "1:1014814260411:web:c7adff1a39026e8fd53d9e",
+    measurementId: "G-4HP0L2KV1Q"
 };
 
+// Initialize Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -17,7 +20,7 @@ let cart = [];
 let activeDiscount = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Load live ticker content safely
+    // Sync live ticker announcement
     db.collection("settings").doc("ticker").get().then((doc) => {
         if (doc.exists && doc.data().text) {
             const tickerEl = document.getElementById("tickerTextContent");
@@ -25,19 +28,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }).catch(err => console.log("Ticker sync active"));
 
-    // Login / Auth Modal Controls
+    // Auth Modal Triggers
     const loginBtn = document.getElementById("loginBtn");
     const authModal = document.getElementById("authModal");
     const closeModal = document.getElementById("closeModal");
 
     if (loginBtn && authModal) {
-        loginBtn.onclick = () => authModal.classList.remove("hidden");
+        loginBtn.onclick = () => {
+            document.getElementById("loginStep").classList.remove("hidden");
+            document.getElementById("profileStep").classList.add("hidden");
+            document.getElementById("modalTitle").innerText = "Access Terminal";
+            authModal.classList.remove("hidden");
+        };
     }
     if (closeModal && authModal) {
         closeModal.onclick = () => authModal.classList.add("hidden");
     }
 
-    // Google Login Handler
+    // Google Sign-In
     const googleLoginBtn = document.getElementById("googleLoginBtn");
     if (googleLoginBtn) {
         googleLoginBtn.onclick = async () => {
@@ -46,12 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await auth.signInWithPopup(provider);
                 checkUserProfile(result.user);
             } catch (err) {
-                alert("Google Login Failed: " + err.message);
+                alert("Google Sign-In Failed: " + err.message);
             }
         };
     }
 
-    // Email & Password Login / Signup Handler
+    // Email & Password Auth (Step 1)
     const emailPassLoginBtn = document.getElementById("emailPassLoginBtn");
     if (emailPassLoginBtn) {
         emailPassLoginBtn.onclick = async () => {
@@ -75,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Save Profile Handler
+    // Save Profile Handler (Step 2)
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     if (saveProfileBtn) {
         saveProfileBtn.onclick = async () => {
@@ -96,10 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     name,
                     dob,
                     sixDigitId,
+                    isBanned: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
-                alert("Profile saved successfully!");
+                alert("Profile completed successfully!");
                 if (authModal) authModal.classList.add("hidden");
                 location.reload();
             }
@@ -123,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeCartModal.onclick = () => cartModal.classList.add("hidden");
     }
 
-    // Instagram Pricing Calculator
+    // Instagram Calculator
     const instaCountInput = document.getElementById("instaCount");
     const instaPriceSpan = document.getElementById("instaPrice");
     if (instaCountInput && instaPriceSpan) {
@@ -135,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Buy Button Triggers (Strict Login Restriction Enforced)
+    // Buy Button Triggers (Strict Login Enforcement)
     document.querySelectorAll(".buy-trigger").forEach(button => {
         button.onclick = (e) => {
             if (!auth.currentUser) {
@@ -170,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     });
 
-    // Instagram Boost Buy Trigger
+    // Instagram Boost
     const instaBuyTrigger = document.getElementById("instaBuyTrigger");
     if (instaBuyTrigger) {
         instaBuyTrigger.onclick = () => {
@@ -194,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Safe Promo Code Application (Hardcoded + Firestore Fallback)
+    // Promo Code Handler
     const applyPromoBtn = document.getElementById("applyPromoBtn");
     if (applyPromoBtn) {
         applyPromoBtn.onclick = async () => {
@@ -202,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const feedback = document.getElementById("promoFeedback");
             if (!code) return;
 
-            // Hardcoded fallback codes for instant responsiveness
             const fallbackCoupons = { "CYBER10": 10, "WELCOME50": 50, "CYBER20": 20 };
 
             if (fallbackCoupons[code] !== undefined) {
@@ -231,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Proceed to Checkout
+    // Checkout Modal
     const proceedBtn = document.getElementById("proceedToCheckoutBtn");
     const paymentModal = document.getElementById("paymentModal");
     if (proceedBtn && paymentModal) {
@@ -282,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 await db.collection("orders").doc(orderId).set(orderData);
-                alert(`Order submitted successfully! Your Order ID is ${orderId}. Keep this safe for status tracking.`);
+                alert(`Order submitted successfully! Your Order ID is ${orderId}.`);
                 cart = [];
                 updateCartUI();
                 if (paymentModal) paymentModal.classList.add("hidden");
@@ -292,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Update Login Button UI based on Auth State
+    // Auth State Change Handler
     auth.onAuthStateChanged(user => {
         const loginBtnEl = document.getElementById("loginBtn");
         if (user) {
