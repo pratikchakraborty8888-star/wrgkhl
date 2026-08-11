@@ -8,44 +8,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body style="padding: 20px;">
-    <div class="container cyber-box" style="max-width: 1000px; margin: 20px auto;">
-        <h1 style="color: var(--neon-purple); text-align: center; margin-bottom: 20px;">⚡ MASTER ADMIN COMMAND CENTER ⚡</h1>
+    <div class="container cyber-box" style="max-width: 1050px; margin: 20px auto;">
+        <h1 style="color: var(--neon-purple); text-align: center; margin-bottom: 25px;">⚡ MASTER ADMIN COMMAND CENTER ⚡</h1>
         
-        <!-- Live Ticker & Announcement Editor -->
-        <div style="background: rgba(25, 10, 45, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
-            <h3 style="color: #fff; margin-bottom: 10px; font-size: 16px;">📢 Broadcast Live Event / Coupon Ticker</h3>
-            <input type="text" id="adminTickerInput" class="cyber-input" placeholder="Type live coupon or event message here..." style="margin-bottom: 10px;">
+        <!-- Tab 1: Live Announcement / Event Broadcast -->
+        <div style="background: rgba(25, 10, 45, 0.8); padding: 18px; border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
+            <h3 style="color: #fff; margin-bottom: 12px; font-size: 16px;">📢 Broadcast Live Event / Ticker Announcement</h3>
+            <input type="text" id="adminTickerInput" class="cyber-input" placeholder="Type live banner/event announcement..." style="margin-bottom: 12px;">
             <button id="saveTickerBtn" class="cyber-btn">Publish to Live Website</button>
         </div>
 
-        <!-- Promo Code Manager -->
-        <div style="background: rgba(25, 10, 45, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
-            <h3 style="color: #fff; margin-bottom: 10px; font-size: 16px;">🎟️ Create / Update Discount Promo Code</h3>
+        <!-- Tab 2: Promo Code Manager -->
+        <div style="background: rgba(25, 10, 45, 0.8); padding: 18px; border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
+            <h3 style="color: #fff; margin-bottom: 12px; font-size: 16px;">🎟️ Promo Code Manager</h3>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <input type="text" id="adminPromoCode" class="cyber-input" placeholder="CODE (e.g., WELCOME50)" style="flex: 1; margin-bottom:0; text-transform:uppercase;">
-                <input type="number" id="adminPromoDiscount" class="cyber-input" placeholder="Discount % (e.g., 50)" style="width: 150px; margin-bottom:0;">
-                <button id="savePromoBtn" class="cyber-btn" style="width: auto;">Save Coupon</button>
+                <input type="number" id="adminPromoDiscount" class="cyber-input" placeholder="Discount % (e.g., 50)" style="width: 160px; margin-bottom:0;">
+                <button id="savePromoBtn" class="cyber-btn" style="width: auto;">Save Promo Code</button>
             </div>
         </div>
 
-        <!-- Order Management Table -->
-        <h3 style="color: var(--neon-purple); margin-bottom: 15px;">📦 Live Customer Orders</h3>
-        <div style="overflow-x: auto; max-height: 400px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
-                <thead>
-                    <tr style="border-bottom: 1px solid #444; color: #b39ddb;">
-                        <th style="padding: 10px;">Order ID</th>
-                        <th style="padding: 10px;">Phone</th>
-                        <th style="padding: 10px;">Total</th>
-                        <th style="padding: 10px;">UTR</th>
-                        <th style="padding: 10px;">Status</th>
-                        <th style="padding: 10px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="adminOrdersTableBody">
-                    <tr><td colspan="6" style="padding: 15px; text-align: center; color: #888;">Loading real-time orders...</td></tr>
-                </tbody>
-            </table>
+        <!-- Tab 3: User Access & Ban Manager -->
+        <div style="background: rgba(25, 10, 45, 0.8); padding: 18px; border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
+            <h3 style="color: #fff; margin-bottom: 12px; font-size: 16px;">👥 User Access & Ban Control</h3>
+            <div style="overflow-x: auto; max-height: 250px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #444; color: #b39ddb;">
+                            <th style="padding: 8px;">Name</th>
+                            <th style="padding: 8px;">Email</th>
+                            <th style="padding: 8px;">User ID</th>
+                            <th style="padding: 8px;">Status</th>
+                            <th style="padding: 8px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminUsersTableBody">
+                        <tr><td colspan="5" style="padding: 12px; text-align: center; color: #888;">Loading registered users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 4: Live Orders Manager -->
+        <div style="background: rgba(25, 10, 45, 0.8); padding: 18px; border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(176,38,255,0.3);">
+            <h3 style="color: #fff; margin-bottom: 12px; font-size: 16px;">📦 Live Customer Orders</h3>
+            <div style="overflow-x: auto; max-height: 350px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #444; color: #b39ddb;">
+                            <th style="padding: 10px;">Order ID</th>
+                            <th style="padding: 10px;">Phone</th>
+                            <th style="padding: 10px;">Total</th>
+                            <th style="padding: 10px;">UTR</th>
+                            <th style="padding: 10px;">Status</th>
+                            <th style="padding: 10px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersTableBody">
+                        <tr><td colspan="6" style="padding: 15px; text-align: center; color: #888;">Loading real-time orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
