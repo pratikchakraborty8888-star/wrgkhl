@@ -1,4 +1,4 @@
-// Live Firebase Configuration for Cyber Store
+// Live Firebase Configuration for Cyber Store Admin
 const firebaseConfig = {
     apiKey: "AIzaSyDUowN2gw6HvlBooZw2VDbroabjGhjMlRM",
     authDomain: "cyber-store-b2668.firebaseapp.com",
@@ -9,369 +9,117 @@ const firebaseConfig = {
     measurementId: "G-4HP0L2KV1Q"
 };
 
-// Initialize Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-const auth = firebase.auth();
-
-let cart = [];
-let activeDiscount = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Sync live ticker announcement
-    db.collection("settings").doc("ticker").get().then((doc) => {
-        if (doc.exists && doc.data().text) {
-            const tickerEl = document.getElementById("tickerTextContent");
-            if (tickerEl) tickerEl.innerHTML = doc.data().text;
-        }
-    }).catch(err => console.log("Ticker sync active"));
-
-    // Auth Modal Triggers
-    const loginBtn = document.getElementById("loginBtn");
-    const authModal = document.getElementById("authModal");
-    const closeModal = document.getElementById("closeModal");
-
-    if (loginBtn && authModal) {
-        loginBtn.onclick = () => {
-            document.getElementById("loginStep").classList.remove("hidden");
-            document.getElementById("profileStep").classList.add("hidden");
-            document.getElementById("modalTitle").innerText = "Access Terminal";
-            authModal.classList.remove("hidden");
-        };
-    }
-    if (closeModal && authModal) {
-        closeModal.onclick = () => authModal.classList.add("hidden");
-    }
-
-    // Google Sign-In
-    const googleLoginBtn = document.getElementById("googleLoginBtn");
-    if (googleLoginBtn) {
-        googleLoginBtn.onclick = async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
+    // 1. Broadcast Ticker
+    const saveTickerBtn = document.getElementById("saveTickerBtn");
+    if (saveTickerBtn) {
+        saveTickerBtn.onclick = async () => {
+            const text = document.getElementById("adminTickerInput").value.trim();
+            if (!text) return alert("Please enter ticker text.");
             try {
-                const result = await auth.signInWithPopup(provider);
-                checkUserProfile(result.user);
-            } catch (err) {
-                alert("Google Sign-In Failed: " + err.message);
-            }
-        };
-    }
-
-    // Email & Password Auth (Step 1)
-    const emailPassLoginBtn = document.getElementById("emailPassLoginBtn");
-    if (emailPassLoginBtn) {
-        emailPassLoginBtn.onclick = async () => {
-            const email = document.getElementById("authEmail").value.trim();
-            const password = document.getElementById("authPassword").value.trim();
-            if (!email || !password) {
-                alert("Please enter both email and password.");
-                return;
-            }
-            try {
-                let userCred;
-                try {
-                    userCred = await auth.signInWithEmailAndPassword(email, password);
-                } catch (e) {
-                    userCred = await auth.createUserWithEmailAndPassword(email, password);
-                }
-                checkUserProfile(userCred.user);
-            } catch (err) {
-                alert("Authentication Error: " + err.message);
-            }
-        };
-    }
-
-    // Save Profile Handler (Step 2)
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    if (saveProfileBtn) {
-        saveProfileBtn.onclick = async () => {
-            const user = auth.currentUser;
-            const name = document.getElementById("profileName").value.trim();
-            const dob = document.getElementById("profileDob").value;
-
-            if (!name || !dob) {
-                alert("Please fill in your name and date of birth.");
-                return;
-            }
-
-            if (user) {
-                const sixDigitId = Math.floor(100000 + Math.random() * 900000).toString();
-                await db.collection("users").doc(user.uid).set({
-                    uid: user.uid,
-                    email: user.email,
-                    name,
-                    dob,
-                    sixDigitId,
-                    isBanned: false,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-
-                alert("Profile completed successfully!");
-                if (authModal) authModal.classList.add("hidden");
-                location.reload();
-            }
-        };
-    }
-
-    // Cart Modal Controls
-    const cartModal = document.getElementById("cartModal");
-    const openCartBtn = document.getElementById("openCartBtn");
-    const closeCartModal = document.getElementById("closeCartModal");
-
-    if (openCartBtn && cartModal) {
-        openCartBtn.onclick = () => {
-            if (!auth.currentUser) {
-                alert("⚠️ Access Denied: You must Login / Sign Up before viewing your cart!");
-                if (authModal) authModal.classList.remove("hidden");
-                return;
-            }
-            cartModal.classList.remove("hidden");
-        };
-        closeCartModal.onclick = () => cartModal.classList.add("hidden");
-    }
-
-    // Instagram Calculator
-    const instaCountInput = document.getElementById("instaCount");
-    const instaPriceSpan = document.getElementById("instaPrice");
-    if (instaCountInput && instaPriceSpan) {
-        instaCountInput.oninput = () => {
-            let count = parseInt(instaCountInput.value) || 100;
-            let price = (count / 1000) * 60;
-            if (count > 1000) price = price * 0.9;
-            instaPriceSpan.innerText = Math.round(price);
-        };
-    }
-
-    // Buy Button Triggers (Strict Login Enforcement)
-    document.querySelectorAll(".buy-trigger").forEach(button => {
-        button.onclick = (e) => {
-            if (!auth.currentUser) {
-                alert("🔒 Login Required: Please login or sign up before adding items to your cart!");
-                if (authModal) authModal.classList.remove("hidden");
-                return;
-            }
-
-            const card = e.target.closest(".card");
-            const name = card.getAttribute("data-name");
-            let price = parseFloat(card.getAttribute("data-price"));
-            let details = "";
-
-            if (name === "Spotify Premium") {
-                const planSelect = card.querySelector("#spotifyPlan");
-                price = parseFloat(planSelect.value);
-                details = planSelect.options[planSelect.selectedIndex].text;
-            }
-
-            const emailInput = card.querySelector(".user-email-input");
-            const email = emailInput ? emailInput.value.trim() : "";
-            const requireEmail = card.getAttribute("data-require-email") === "true";
-
-            if (requireEmail && !email) {
-                alert("Please enter a valid activation email address.");
-                return;
-            }
-
-            cart.push({ name, price, details, email });
-            updateCartUI();
-            if (cartModal) cartModal.classList.remove("hidden");
-        };
-    });
-
-    // Instagram Boost
-    const instaBuyTrigger = document.getElementById("instaBuyTrigger");
-    if (instaBuyTrigger) {
-        instaBuyTrigger.onclick = () => {
-            if (!auth.currentUser) {
-                alert("🔒 Login Required: Please login or sign up first!");
-                if (authModal) authModal.classList.remove("hidden");
-                return;
-            }
-            const count = parseInt(document.getElementById("instaCount").value) || 100;
-            const username = document.getElementById("instaUsername").value.trim();
-            if (!username) {
-                alert("Please enter your Instagram username.");
-                return;
-            }
-            let price = (count / 1000) * 60;
-            if (count > 1000) price = price * 0.9;
-
-            cart.push({ name: "Instagram Followers", price: Math.round(price), details: `${count} Followers (${username})`, email: username });
-            updateCartUI();
-            if (cartModal) cartModal.classList.remove("hidden");
-        };
-    }
-
-    // Promo Code Handler
-    const applyPromoBtn = document.getElementById("applyPromoBtn");
-    if (applyPromoBtn) {
-        applyPromoBtn.onclick = async () => {
-            const code = document.getElementById("promoCodeInput").value.trim().toUpperCase();
-            const feedback = document.getElementById("promoFeedback");
-            if (!code) return;
-
-            const fallbackCoupons = { "CYBER10": 10, "WELCOME50": 50, "CYBER20": 20 };
-
-            if (fallbackCoupons[code] !== undefined) {
-                activeDiscount = fallbackCoupons[code];
-                feedback.style.color = "var(--success-color)";
-                feedback.innerText = `Promo applied! ${activeDiscount}% OFF`;
-                updateCartUI();
-                return;
-            }
-
-            try {
-                const doc = await db.collection("promos").doc(code).get();
-                if (doc.exists) {
-                    activeDiscount = doc.data().discountPercent || 0;
-                    feedback.style.color = "var(--success-color)";
-                    feedback.innerText = `Promo applied! ${activeDiscount}% OFF`;
-                    updateCartUI();
-                } else {
-                    feedback.style.color = "var(--danger-color)";
-                    feedback.innerText = "Invalid or expired promo code.";
-                }
+                await db.collection("settings").doc("ticker").set({ text });
+                alert("Live banner ticker updated successfully!");
             } catch (e) {
-                feedback.style.color = "var(--danger-color)";
-                feedback.innerText = "Error applying code. Try CYBER10 or WELCOME50.";
+                alert("Error updating ticker.");
             }
         };
     }
 
-    // Checkout Modal
-    const proceedBtn = document.getElementById("proceedToCheckoutBtn");
-    const paymentModal = document.getElementById("paymentModal");
-    if (proceedBtn && paymentModal) {
-        proceedBtn.onclick = () => {
-            if (cart.length === 0) {
-                alert("Your cart is empty!");
-                return;
-            }
-            if (cartModal) cartModal.classList.add("hidden");
-            paymentModal.classList.remove("hidden");
-        };
-    }
-
-    const closePaymentModal = document.getElementById("closePaymentModal");
-    if (closePaymentModal && paymentModal) {
-        closePaymentModal.onclick = () => paymentModal.classList.add("hidden");
-    }
-
-    // Submit Order
-    const submitOrderBtn = document.getElementById("submitOrderBtn");
-    if (submitOrderBtn) {
-        submitOrderBtn.onclick = async () => {
-            const phone = document.getElementById("customerPhone").value.trim();
-            const utr = document.getElementById("utrInput").value.trim();
-
-            if (!phone || phone.length !== 10) {
-                alert("Please enter a valid 10-digit Indian mobile number.");
-                return;
-            }
-            if (!utr || utr.length < 10) {
-                alert("Please enter a valid UTR / Transaction ID.");
-                return;
-            }
-
-            const orderId = "#ORDER" + Math.floor(100000 + Math.random() * 900000);
-            const total = calculateTotal();
-
-            const orderData = {
-                orderId,
-                userUid: auth.currentUser ? auth.currentUser.uid : "guest",
-                phone,
-                utr,
-                items: cart,
-                total,
-                status: "PENDING",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
+    // 2. Promo Code Creator
+    const savePromoBtn = document.getElementById("savePromoBtn");
+    if (savePromoBtn) {
+        savePromoBtn.onclick = async () => {
+            const code = document.getElementById("adminPromoCode").value.trim().toUpperCase();
+            const discountPercent = parseFloat(document.getElementById("adminPromoDiscount").value);
+            if (!code || isNaN(discountPercent)) return alert("Enter valid code and discount percentage.");
             try {
-                await db.collection("orders").doc(orderId).set(orderData);
-                alert(`Order submitted successfully! Your Order ID is ${orderId}.`);
-                cart = [];
-                updateCartUI();
-                if (paymentModal) paymentModal.classList.add("hidden");
-            } catch (err) {
-                alert("Error submitting order. Please try again.");
+                await db.collection("promos").doc(code).set({ discountPercent });
+                alert(`Promo code ${code} saved successfully!`);
+            } catch (e) {
+                alert("Error saving promo code.");
             }
         };
     }
 
-    // Auth State Change Handler
-    auth.onAuthStateChanged(user => {
-        const loginBtnEl = document.getElementById("loginBtn");
-        if (user) {
-            db.collection("users").doc(user.uid).get().then(doc => {
-                if (doc.exists && doc.data().isBanned) {
-                    const bannedOverlay = document.getElementById("bannedOverlay");
-                    const reason = doc.data().banReason || "Your account has been restricted.";
-                    document.getElementById("bannedReasonText").innerText = reason;
-                    if (bannedOverlay) bannedOverlay.style.display = "flex";
-                } else if (loginBtnEl && doc.exists) {
-                    loginBtnEl.innerText = `👤 ${doc.data().name || 'Account'}`;
-                    loginBtnEl.onclick = () => {
-                        auth.signOut().then(() => location.reload());
-                    };
-                }
+    // 3. User Management (View & Ban/Unban)
+    const usersTableBody = document.getElementById("adminUsersTableBody");
+    if (usersTableBody) {
+        db.collection("users").onSnapshot(snapshot => {
+            if (snapshot.empty) {
+                usersTableBody.innerHTML = `<tr><td colspan="5" style="padding: 12px; text-align: center; color: #888;">No users registered yet.</td></tr>`;
+                return;
+            }
+            let html = "";
+            snapshot.forEach(doc => {
+                const u = doc.data();
+                html += `
+                    <tr style="border-bottom: 1px solid #222;">
+                        <td style="padding: 8px;">${u.name || 'N/A'}</td>
+                        <td style="padding: 8px;">${u.email || 'N/A'}</td>
+                        <td style="padding: 8px; color: var(--neon-purple);">${u.sixDigitId || u.uid.substring(0,6)}</td>
+                        <td style="padding: 8px; color: ${u.isBanned ? '#ff0055' : '#00ff66'};">${u.isBanned ? 'BANNED' : 'ACTIVE'}</td>
+                        <td style="padding: 8px;">
+                            <button onclick="toggleUserBan('${doc.id}', ${!u.isBanned})" style="background: ${u.isBanned ? '#00ff6622' : '#ff005522'}; color: ${u.isBanned ? '#00ff66' : '#ff0055'}; border: 1px solid ${u.isBanned ? '#00ff66' : '#ff0055'}; padding: 3px 8px; border-radius: 4px; cursor: pointer;">
+                                ${u.isBanned ? 'Unban' : 'Ban User'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
-        }
-    });
+            usersTableBody.innerHTML = html;
+        });
+    }
+
+    // 4. Live Orders Management
+    const ordersTableBody = document.getElementById("adminOrdersTableBody");
+    if (ordersTableBody) {
+        db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            if (snapshot.empty) {
+                ordersTableBody.innerHTML = `<tr><td colspan="6" style="padding: 15px; text-align: center; color: #888;">No orders found.</td></tr>`;
+                return;
+            }
+            let html = "";
+            snapshot.forEach(doc => {
+                const order = doc.data();
+                html += `
+                    <tr style="border-bottom: 1px solid #222;">
+                        <td style="padding: 10px; color: var(--neon-purple); font-weight: bold;">${order.orderId}</td>
+                        <td style="padding: 10px;">${order.phone}</td>
+                        <td style="padding: 10px;">Rs. ${order.total}</td>
+                        <td style="padding: 10px;">${order.utr}</td>
+                        <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 4px; font-size: 11px; background: ${order.status === 'COMPLETED' ? '#00ff6633' : order.status === 'CANCELLED' ? '#ff005533' : '#ffaa0033'}; color: ${order.status === 'COMPLETED' ? '#00ff66' : order.status === 'CANCELLED' ? '#ff0055' : '#ffaa00'};">${order.status}</span></td>
+                        <td style="padding: 10px; display: flex; gap: 5px;">
+                            <button onclick="updateOrderStatus('${order.orderId}', 'COMPLETED')" style="background:#00ff6622; color:#00ff66; border:1px solid #00ff66; padding:4px 8px; border-radius:4px; cursor:pointer;">Complete</button>
+                            <button onclick="updateOrderStatus('${order.orderId}', 'CANCELLED')" style="background:#ff005522; color:#ff0055; border:1px solid #ff0055; padding:4px 8px; border-radius:4px; cursor:pointer;">Cancel</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            ordersTableBody.innerHTML = html;
+        });
+    }
 });
 
-async function checkUserProfile(user) {
-    const doc = await db.collection("users").doc(user.uid).get();
-    const authModal = document.getElementById("authModal");
-    if (!doc.exists || !doc.data().name) {
-        document.getElementById("loginStep").classList.add("hidden");
-        document.getElementById("profileStep").classList.remove("hidden");
-        document.getElementById("modalTitle").innerText = "Complete Profile";
-    } else {
-        if (authModal) authModal.classList.add("hidden");
-        location.reload();
+window.toggleUserBan = async function(uid, banStatus) {
+    let reason = banStatus ? prompt("Enter ban reason for this user:", "Terms violation") : "";
+    try {
+        await db.collection("users").doc(uid).update({ isBanned: banStatus, banReason: reason });
+        alert(`User ${banStatus ? 'Banned' : 'Unbanned'} successfully.`);
+    } catch (e) {
+        alert("Action failed.");
     }
-}
+};
 
-function calculateTotal() {
-    let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    let total = subtotal - (subtotal * (activeDiscount / 100));
-    return Math.max(0, Math.round(total));
-}
-
-function updateCartUI() {
-    const container = document.getElementById("cartItemsContainer");
-    const badge = document.getElementById("cartBadge");
-    const subtotalEl = document.getElementById("cartSubtotal");
-    const totalEl = document.getElementById("cartTotalPrice");
-
-    if (badge) badge.innerText = cart.length;
-
-    if (container) {
-        if (cart.length === 0) {
-            container.innerHTML = `<p style="color: #888;">Your cart is empty.</p>`;
-        } else {
-            container.innerHTML = cart.map((item, index) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 5px;">
-                    <div>
-                        <b>${item.name}</b> ${item.details ? `(${item.details})` : ''}
-                        <br><span style="font-size: 11px; color: #aaa;">Rs. ${item.price}</span>
-                    </div>
-                    <button onclick="removeFromCart(${index})" style="background:none; border:none; color:var(--danger-color); cursor:pointer;"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
-        }
+window.updateOrderStatus = async function(orderId, status) {
+    try {
+        await db.collection("orders").doc(orderId).update({ status });
+        alert(`Order ${orderId} marked as ${status}`);
+    } catch (e) {
+        alert("Failed to update status.");
     }
-
-    let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    let total = calculateTotal();
-
-    if (subtotalEl) subtotalEl.innerText = `Rs. ${subtotal}`;
-    if (totalEl) totalEl.innerText = total;
-}
-
-window.removeFromCart = function(index) {
-    cart.splice(index, 1);
-    updateCartUI();
 };
