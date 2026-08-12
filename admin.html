@@ -3,32 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Store | Admin Order Search</title>
+    <title>Cyber Store | Ultimate Master Admin</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body style="padding: 40px 20px;">
-    
-    <div class="container">
-        <div class="cyber-box checkout-box" style="max-width: 600px; margin: 0 auto; text-align: center; border-color: var(--neon-purple);">
-            <h1 style="color: var(--neon-purple); margin-bottom: 10px; font-size: 28px;">Admin Terminal</h1>
-            <p style="color: #d1c4e9; margin-bottom: 25px; font-size: 14px;">Search and manage customer transactions</p>
-
-            <!-- Original Order ID Search Bar -->
-            <div style="display: flex; gap: 10px; margin-bottom: 30px;">
-                <input type="text" id="searchOrderId" class="cyber-input" placeholder="Enter Order ID (e.g., #ORDER123456)" style="margin-bottom: 0; text-transform: uppercase;">
-                <button id="searchOrderBtn" class="cyber-btn" style="width: auto; padding: 0 25px;">Search</button>
+<body style="padding: 20px;">
+    <div class="container cyber-box" style="max-width: 1100px; margin: 20px auto; border-color: #ff0055; box-shadow: 0 0 30px rgba(255,0,85,0.2);">
+        <h1 style="color: var(--neon-purple); text-align: center; margin-bottom: 25px; font-size: 32px; text-shadow: 0 0 15px var(--neon-purple);">⚡ SUPREME ADMIN TERMINAL ⚡</h1>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px;">
+            
+            <!-- 1. Live Ticker / Poster Management -->
+            <div style="background: rgba(15, 5, 25, 0.9); padding: 20px; border-radius: 10px; border: 1px solid rgba(176,38,255,0.4);">
+                <h3 style="color: #fff; margin-bottom: 12px;"><i class="fas fa-bullhorn" style="color: var(--neon-purple);"></i> Event / Poster Ticker</h3>
+                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Update the scrolling banner at the top of the website.</p>
+                <input type="text" id="adminTickerInput" class="cyber-input" placeholder="Type live banner announcement..." style="margin-bottom: 12px;">
+                <button id="saveTickerBtn" class="cyber-btn full-width">Push to Live Website</button>
             </div>
 
-            <!-- Search Results Display -->
-            <div id="orderResultContainer" style="display: none; text-align: left; background: rgba(5,2,10,0.6); padding: 20px; border-radius: 8px; border: 1px solid rgba(176,38,255,0.3);">
-                <!-- Fetched order data will appear here -->
+            <!-- 2. Global Notice Management -->
+            <div style="background: rgba(15, 5, 25, 0.9); padding: 20px; border-radius: 10px; border: 1px solid #00ff66;">
+                <h3 style="color: #fff; margin-bottom: 12px;"><i class="fas fa-comment-dots" style="color: #00ff66;"></i> Send Global Notice</h3>
+                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Trigger a popup message for all users on the website.</p>
+                <input type="text" id="adminNoticeTitle" class="cyber-input" placeholder="Notice Title (e.g., SYSTEM UPDATE)" style="margin-bottom: 10px;">
+                <textarea id="adminNoticeText" class="cyber-input" placeholder="Notice Message..." rows="2" style="resize: none; margin-bottom: 12px;"></textarea>
+                <button id="saveNoticeBtn" class="cyber-btn full-width" style="background: linear-gradient(135deg, #00ff66, #00cc55); color: #000;">Broadcast Notice</button>
+            </div>
+
+            <!-- 3. Promo Code Manager -->
+            <div style="background: rgba(15, 5, 25, 0.9); padding: 20px; border-radius: 10px; border: 1px solid rgba(176,38,255,0.4);">
+                <h3 style="color: #fff; margin-bottom: 12px;"><i class="fas fa-ticket-alt" style="color: var(--neon-purple);"></i> Promo Code Generator</h3>
+                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Create or overwrite discount codes.</p>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="adminPromoCode" class="cyber-input" placeholder="CODE (e.g., WELCOME50)" style="flex: 2; margin-bottom:0; text-transform:uppercase;">
+                    <input type="number" id="adminPromoDiscount" class="cyber-input" placeholder="% OFF" style="flex: 1; margin-bottom:0;">
+                    <button id="savePromoBtn" class="cyber-btn" style="flex: 1;">Save</button>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 4. User Access & Ban Manager -->
+        <div style="background: rgba(15, 5, 25, 0.9); padding: 20px; border-radius: 10px; margin-top: 25px; border: 1px solid rgba(176,38,255,0.4);">
+            <h3 style="color: #fff; margin-bottom: 12px;"><i class="fas fa-users-slash" style="color: #ff0055;"></i> User Ban & Access Control</h3>
+            <div style="overflow-x: auto; max-height: 250px; border: 1px solid #333; border-radius: 6px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead style="background: rgba(0,0,0,0.5); position: sticky; top: 0;">
+                        <tr style="border-bottom: 1px solid #444; color: #b39ddb;">
+                            <th style="padding: 10px;">Name</th>
+                            <th style="padding: 10px;">Email</th>
+                            <th style="padding: 10px;">User ID</th>
+                            <th style="padding: 10px;">Status</th>
+                            <th style="padding: 10px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminUsersTableBody">
+                        <tr><td colspan="5" style="padding: 15px; text-align: center; color: #888;">Loading registered users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. Live Orders Manager -->
+        <div style="background: rgba(15, 5, 25, 0.9); padding: 20px; border-radius: 10px; margin-top: 25px; border: 1px solid rgba(176,38,255,0.4);">
+            <h3 style="color: #fff; margin-bottom: 12px;"><i class="fas fa-box-open" style="color: var(--neon-purple);"></i> Live Order Management</h3>
+            <div style="overflow-x: auto; max-height: 400px; border: 1px solid #333; border-radius: 6px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead style="background: rgba(0,0,0,0.5); position: sticky; top: 0;">
+                        <tr style="border-bottom: 1px solid #444; color: #b39ddb;">
+                            <th style="padding: 10px;">Order ID</th>
+                            <th style="padding: 10px;">Phone</th>
+                            <th style="padding: 10px;">Total</th>
+                            <th style="padding: 10px;">UTR</th>
+                            <th style="padding: 10px;">Status</th>
+                            <th style="padding: 10px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersTableBody">
+                        <tr><td colspan="6" style="padding: 15px; text-align: center; color: #888;">Loading real-time orders...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="admin.js"></script>
 </body>
