@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,7 @@
 
     <!-- Live Admin Announcement & Event / Coupon Ticker Bar -->
     <div id="liveEventTicker" style="background: linear-gradient(90deg, #7000ff, #b026ff, #ff0055); color: #fff; padding: 8px 15px; font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; position: relative; z-index: 1001; box-shadow: 0 0 15px rgba(176,38,255,0.4);">
-        <marquee scrollamount="5" id="tickerTextContent">⚡ WELCOME TO CYBER STORE | Use Code <span style="color:#00ff66;">CYBER10</span> or <span style="color:#00ff66;">WELCOME50</span> for instant savings! | Premium Streaming & Social Boosts Active 24/7 ⚡</marquee>
+        <marquee scrollamount="5" id="tickerTextContent">⚡ WELCOME TO CYBER STORE | Premium Streaming & Social Boosts Active 24/7 ⚡</marquee>
     </div>
 
     <!-- Banned / Suspended Full-Screen Red Neon Overlay -->
@@ -137,7 +137,6 @@
     <!-- Dynamic Products Grid -->
     <main class="container">
         <section class="grid" id="productsContainer">
-            <!-- Products will be loaded here dynamically from Firebase -->
             <p style="text-align: center; width: 100%; color: #888;">Loading terminal database...</p>
         </section>
 
@@ -152,6 +151,12 @@
             <button class="cyber-btn full-width" id="instaBuyTrigger">Boost Instagram</button>
         </section>
     </main>
+
+    <!-- Support Floating Button -->
+    <button id="aiSupportFloatBtn" class="support-float-btn" title="Support & AI Chat">
+        <i class="fas fa-robot"></i>
+        <span>Support</span>
+    </button>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
