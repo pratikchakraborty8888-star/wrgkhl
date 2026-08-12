@@ -15,22 +15,46 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Broadcast Ticker
+    // 1. Poster / Ticker Management
     const saveTickerBtn = document.getElementById("saveTickerBtn");
     if (saveTickerBtn) {
         saveTickerBtn.onclick = async () => {
             const text = document.getElementById("adminTickerInput").value.trim();
-            if (!text) return alert("Please enter ticker text.");
+            if (!text) return alert("Please enter the poster/ticker text.");
             try {
                 await db.collection("settings").doc("ticker").set({ text });
-                alert("Live banner ticker updated successfully!");
+                alert("✅ Live poster ticker updated successfully!");
+                document.getElementById("adminTickerInput").value = '';
             } catch (e) {
-                alert("Error updating ticker.");
+                alert("❌ Error updating ticker.");
             }
         };
     }
 
-    // 2. Promo Code Creator
+    // 2. Global Notice Management
+    const saveNoticeBtn = document.getElementById("saveNoticeBtn");
+    if (saveNoticeBtn) {
+        saveNoticeBtn.onclick = async () => {
+            const title = document.getElementById("adminNoticeTitle").value.trim();
+            const text = document.getElementById("adminNoticeText").value.trim();
+            if (!title || !text) return alert("Please enter both Notice Title and Text.");
+            try {
+                // This triggers the #cyberMsgModal on the main website
+                await db.collection("settings").doc("globalNotice").set({ 
+                    title: title, 
+                    text: text, 
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+                alert("✅ Global Notice Broadcasted Successfully!");
+                document.getElementById("adminNoticeTitle").value = '';
+                document.getElementById("adminNoticeText").value = '';
+            } catch (e) {
+                alert("❌ Error broadcasting notice.");
+            }
+        };
+    }
+
+    // 3. Promo Code Management
     const savePromoBtn = document.getElementById("savePromoBtn");
     if (savePromoBtn) {
         savePromoBtn.onclick = async () => {
@@ -39,17 +63,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!code || isNaN(discountPercent)) return alert("Enter valid code and discount percentage.");
             try {
                 await db.collection("promos").doc(code).set({ discountPercent });
-                alert(`Promo code ${code} saved successfully!`);
+                alert(`✅ Promo code ${code} saved successfully!`);
+                document.getElementById("adminPromoCode").value = '';
+                document.getElementById("adminPromoDiscount").value = '';
             } catch (e) {
-                alert("Error saving promo code.");
+                alert("❌ Error saving promo code.");
             }
         };
     }
 
-    // 3. User Management (View & Ban/Unban)
+    // 4. User Ban & Suspend Management
     const usersTableBody = document.getElementById("adminUsersTableBody");
     if (usersTableBody) {
-        db.collection("users").onSnapshot(snapshot => {
+        db.collection("users").orderBy("createdAt", "desc").onSnapshot(snapshot => {
             if (snapshot.empty) {
                 usersTableBody.innerHTML = `<tr><td colspan="5" style="padding: 12px; text-align: center; color: #888;">No users registered yet.</td></tr>`;
                 return;
@@ -58,14 +84,14 @@ document.addEventListener("DOMContentLoaded", () => {
             snapshot.forEach(doc => {
                 const u = doc.data();
                 html += `
-                    <tr style="border-bottom: 1px solid #222;">
-                        <td style="padding: 8px;">${u.name || 'N/A'}</td>
-                        <td style="padding: 8px;">${u.email || 'N/A'}</td>
-                        <td style="padding: 8px; color: var(--neon-purple);">${u.sixDigitId || u.uid.substring(0,6)}</td>
-                        <td style="padding: 8px; color: ${u.isBanned ? '#ff0055' : '#00ff66'};">${u.isBanned ? 'BANNED' : 'ACTIVE'}</td>
-                        <td style="padding: 8px;">
-                            <button onclick="toggleUserBan('${doc.id}', ${!u.isBanned})" style="background: ${u.isBanned ? '#00ff6622' : '#ff005522'}; color: ${u.isBanned ? '#00ff66' : '#ff0055'}; border: 1px solid ${u.isBanned ? '#00ff66' : '#ff0055'}; padding: 3px 8px; border-radius: 4px; cursor: pointer;">
-                                ${u.isBanned ? 'Unban' : 'Ban User'}
+                    <tr style="border-bottom: 1px solid #222; background: ${u.isBanned ? 'rgba(255,0,85,0.05)' : 'transparent'};">
+                        <td style="padding: 10px;">${u.name || 'N/A'}</td>
+                        <td style="padding: 10px;">${u.email || 'N/A'}</td>
+                        <td style="padding: 10px; color: var(--neon-purple); font-weight:bold;">${u.sixDigitId || doc.id.substring(0,6)}</td>
+                        <td style="padding: 10px; font-weight: bold; color: ${u.isBanned ? '#ff0055' : '#00ff66'};">${u.isBanned ? 'SUSPENDED' : 'ACTIVE'}</td>
+                        <td style="padding: 10px;">
+                            <button onclick="toggleUserBan('${doc.id}', ${!u.isBanned})" class="cyber-btn" style="background: ${u.isBanned ? '#00ff6622' : '#ff005522'}; color: ${u.isBanned ? '#00ff66' : '#ff0055'}; border: 1px solid ${u.isBanned ? '#00ff66' : '#ff0055'}; padding: 6px 12px; font-size: 11px;">
+                                ${u.isBanned ? 'Unban User' : 'Suspend / Ban'}
                             </button>
                         </td>
                     </tr>
@@ -75,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 4. Live Orders Management
+    // 5. Live Orders Management
     const ordersTableBody = document.getElementById("adminOrdersTableBody");
     if (ordersTableBody) {
         db.collection("orders").orderBy("createdAt", "desc").onSnapshot(snapshot => {
@@ -86,16 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
             let html = "";
             snapshot.forEach(doc => {
                 const order = doc.data();
+                let statusColor = order.status === 'COMPLETED' ? '#00ff66' : order.status === 'CANCELLED' ? '#ff0055' : '#ffaa00';
+                
                 html += `
                     <tr style="border-bottom: 1px solid #222;">
-                        <td style="padding: 10px; color: var(--neon-purple); font-weight: bold;">${order.orderId}</td>
-                        <td style="padding: 10px;">${order.phone}</td>
-                        <td style="padding: 10px;">Rs. ${order.total}</td>
-                        <td style="padding: 10px;">${order.utr}</td>
-                        <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 4px; font-size: 11px; background: ${order.status === 'COMPLETED' ? '#00ff6633' : order.status === 'CANCELLED' ? '#ff005533' : '#ffaa0033'}; color: ${order.status === 'COMPLETED' ? '#00ff66' : order.status === 'CANCELLED' ? '#ff0055' : '#ffaa00'};">${order.status}</span></td>
-                        <td style="padding: 10px; display: flex; gap: 5px;">
-                            <button onclick="updateOrderStatus('${order.orderId}', 'COMPLETED')" style="background:#00ff6622; color:#00ff66; border:1px solid #00ff66; padding:4px 8px; border-radius:4px; cursor:pointer;">Complete</button>
-                            <button onclick="updateOrderStatus('${order.orderId}', 'CANCELLED')" style="background:#ff005522; color:#ff0055; border:1px solid #ff0055; padding:4px 8px; border-radius:4px; cursor:pointer;">Cancel</button>
+                        <td style="padding: 12px; color: var(--neon-purple); font-weight: bold; font-size: 14px;">${order.orderId}</td>
+                        <td style="padding: 12px;">${order.phone}</td>
+                        <td style="padding: 12px; font-weight: bold;">Rs. ${order.total}</td>
+                        <td style="padding: 12px; color: #d1c4e9;">${order.utr}</td>
+                        <td style="padding: 12px;"><span style="padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; background: ${statusColor}22; color: ${statusColor}; border: 1px solid ${statusColor};">${order.status}</span></td>
+                        <td style="padding: 12px; display: flex; gap: 8px;">
+                            <button onclick="updateOrderStatus('${order.orderId}', 'COMPLETED')" class="cyber-btn" style="background:#00ff6622; color:#00ff66; border-color:#00ff66; padding: 5px 10px; font-size:11px;">Complete</button>
+                            <button onclick="updateOrderStatus('${order.orderId}', 'CANCELLED')" class="cyber-btn" style="background:#ff005522; color:#ff0055; border-color:#ff0055; padding: 5px 10px; font-size:11px;">Cancel</button>
                         </td>
                     </tr>
                 `;
@@ -105,21 +133,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Admin Global Functions
 window.toggleUserBan = async function(uid, banStatus) {
-    let reason = banStatus ? prompt("Enter ban reason for this user:", "Terms violation") : "";
+    let reason = "";
+    if (banStatus) {
+        reason = prompt("⚠️ You are about to BAN a user. Enter the reason (e.g., Fraud, Terms Violation):", "Account Suspended by Admin");
+        if (reason === null) return; // Admin cancelled the prompt
+    }
+    
     try {
-        await db.collection("users").doc(uid).update({ isBanned: banStatus, banReason: reason });
-        alert(`User ${banStatus ? 'Banned' : 'Unbanned'} successfully.`);
+        await db.collection("users").doc(uid).update({ 
+            isBanned: banStatus, 
+            banReason: reason 
+        });
+        // Feedback is automatic via the onSnapshot listener above
     } catch (e) {
-        alert("Action failed.");
+        alert("❌ Failed to update user status.");
     }
 };
 
 window.updateOrderStatus = async function(orderId, status) {
     try {
         await db.collection("orders").doc(orderId).update({ status });
-        alert(`Order ${orderId} marked as ${status}`);
+        // Feedback is automatic via the onSnapshot listener above
     } catch (e) {
-        alert("Failed to update status.");
+        alert("❌ Failed to update order status.");
     }
 };
