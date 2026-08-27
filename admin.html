@@ -27,7 +27,7 @@
         <!-- Main Panels Area -->
         <div class="admin-main">
             
-            <!-- TAB: ORDERS (With 4 Status Buttons) -->
+            <!-- TAB: ORDERS -->
             <div id="tab-orders" class="admin-3d-panel active">
                 <div class="admin-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);">
                     <h3 style="color: #fff; margin-bottom: 20px; font-size: 20px;"><i class="fas fa-box-open" style="color: var(--neon-purple);"></i> Order Management Console</h3>
@@ -46,21 +46,32 @@
             <div id="tab-products" class="admin-3d-panel">
                 <div class="admin-card" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);">
                     <h3 style="color: #fff; margin-bottom: 20px;"><i class="fas fa-plus-square" style="color: #00ccff;"></i> Store Inventory Control</h3>
+                    
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                         <input type="text" id="prodName" class="cyber-input" placeholder="Product Name (e.g., Netflix)">
-                        <input type="number" id="prodPrice" class="cyber-input" placeholder="Price (Rs.)">
+                        <input type="number" id="prodPrice" class="cyber-input" placeholder="Base Price (Rs.)">
                         <select id="prodReqEmail" class="cyber-input"><option value="true">Requires Email: YES</option><option value="false">Requires Email: NO</option></select>
                     </div>
+
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                         <input type="text" id="prodIcon" class="cyber-input" placeholder="FontAwesome Class (e.g., fa-solid fa-n)">
                         <input type="color" id="prodColor" class="cyber-input" style="height: 42px; padding: 2px;">
+                        <input type="text" id="prodVariants" class="cyber-input" placeholder="Variants e.g. 1 Month:59, 2 Months:69" style="flex: 2;">
                     </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #00ff66; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="prodLimited" style="width: 18px; height: 18px;"> Tag as "Limited Time Product"
+                        </label>
+                    </div>
+
                     <textarea id="prodDesc" class="cyber-input" placeholder="Product Description / Warranty details..." rows="2"></textarea>
+                    
                     <button id="saveProductBtn" class="cyber-btn full-width" style="margin-bottom: 30px; padding: 12px; font-size: 15px;">Deploy Product to Live Store</button>
 
                     <h3 style="color: #fff; margin-bottom: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">Active Storefront Products</h3>
                     <table class="admin-table">
-                        <thead style="background: rgba(0,204,255,0.1);"><tr><th>Name</th><th>Price</th><th>Req. Email</th><th>Action</th></tr></thead>
+                        <thead style="background: rgba(0,204,255,0.1);"><tr><th>Name</th><th>Variants / Base Price</th><th>Flags</th><th>Action</th></tr></thead>
                         <tbody id="adminProductsTableBody"></tbody>
                     </table>
                 </div>
