@@ -157,13 +157,13 @@
         <span>Support</span>
     </button>
 
-    <!-- Voiceflow Chat Widget Script & Custom Support Trigger -->
+    <!-- Voiceflow Chat Widget Script connected to your Project ID -->
     <script type="text/javascript">
       (function(d, t) {
           var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
           v.onload = function() {
             window.voiceflow.chat.load({
-              verify: { projectID: '6a781686163f49d0c15784eb' },
+              verify: { projectID: '6a8fb97b4573da0ea0f268a9' },
               url: 'https://general-runtime.voiceflow.com',
               versionID: 'production'
             });
@@ -171,6 +171,7 @@
           v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
       })(document, 'script');
 
+      // Connect custom support button to Voiceflow widget
       document.addEventListener("DOMContentLoaded", () => {
           const supportBtn = document.getElementById('aiSupportFloatBtn');
           if (supportBtn) {
