@@ -20,7 +20,7 @@ const auth = firebase.auth();
 
 let cart = [];
 let activeDiscount = 0;
-let activeGift = ""; // Tracks the Free Gift applied via Promo Code
+let activeGift = ""; 
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Sync Live Ticker
@@ -48,24 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (closeModal) closeModal.onclick = () => authModal.classList.add("hidden");
 
-    // Auth Handlers (Google + Email)
+    // Google Sign-In Only
     document.getElementById("googleLoginBtn").onclick = async () => {
         try {
             const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
             checkUserProfile(result.user);
-        } catch (err) { alert("Google Sign-In Failed"); }
-    };
-    
-    document.getElementById("emailPassLoginBtn").onclick = async () => {
-        const email = document.getElementById("authEmail").value.trim();
-        const password = document.getElementById("authPassword").value.trim();
-        if (!email || !password) return alert("Enter both email and password.");
-        try {
-            let userCred;
-            try { userCred = await auth.signInWithEmailAndPassword(email, password); } 
-            catch (e) { userCred = await auth.createUserWithEmailAndPassword(email, password); }
-            checkUserProfile(userCred.user);
-        } catch (err) { alert("Auth Error: " + err.message); }
+        } catch (err) { 
+            alert("Google Sign-In Failed: " + err.message); 
+        }
     };
 
     document.getElementById("saveProfileBtn").onclick = async () => {
@@ -88,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartModal = document.getElementById("cartModal");
     document.getElementById("openCartBtn").onclick = () => {
         if (!auth.currentUser) {
-            alert("🔒 Access Denied: You must Login or Sign Up before accessing your cart!");
+            alert("🔒 Access Denied: You must Login before accessing your cart!");
             authModal.classList.remove("hidden");
             return;
         }
@@ -96,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     document.getElementById("closeCartModal").onclick = () => cartModal.classList.add("hidden");
 
-    // 5. Instagram Calculator Fixed Logic (₹7 per 100 / Discount at 2000)
+    // 5. Instagram Calculator Fixed Logic
     const instaCountInput = document.getElementById("instaCount");
     const instaPriceSpan = document.getElementById("instaPrice");
     if (instaCountInput && instaPriceSpan) {
@@ -107,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // 6. Instagram Buy Trigger - STRICT LOGIN
+    // 6. Instagram Buy Trigger
     document.getElementById("instaBuyTrigger").onclick = () => {
         if (!auth.currentUser) {
             alert("🔒 Sign In Required: Please log in to add this to your cart.");
@@ -124,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cartModal.classList.remove("hidden");
     };
 
-    // 7. Promo Code Application (Handles Discounts & Free Gifts)
+    // 7. Promo Code Application (Discounts & Free Gifts)
     document.getElementById("applyPromoBtn").onclick = async () => {
         const code = document.getElementById("promoCodeInput").value.trim().toUpperCase();
         const feedback = document.getElementById("promoFeedback");
@@ -135,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (doc.exists) {
                 const promoData = doc.data();
                 
-                // Check if this code is locked to a specific User ID
+                // Target Lock Check
                 if (promoData.targetSixId && promoData.targetSixId !== auth.currentUser.sixDigitId) {
                     feedback.style.color = "var(--danger-color)";
                     feedback.innerText = "This promo code is assigned to a different user.";
@@ -183,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
             utr, 
             items: cart, 
             total: calculateTotal(), 
-            freeGift: activeGift, // Adds the free gift to the database for the Admin to see
+            freeGift: activeGift, 
             status: "PENDING", 
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -191,14 +181,14 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(`Order submitted! ID: ${orderId}`);
         cart = []; 
         activeDiscount = 0; 
-        activeGift = ""; // Reset after purchase
+        activeGift = ""; 
         document.getElementById("promoFeedback").innerText = "";
         document.getElementById("promoCodeInput").value = "";
         updateCartUI(); 
         paymentModal.classList.add("hidden");
     };
 
-    // 9. Real-time User Listener (Bans, Suspensions, Targeted Notices)
+    // 9. Real-time User Listener
     auth.onAuthStateChanged(user => {
         if (user) {
             const loginBtnEl = document.getElementById("loginBtn");
@@ -208,7 +198,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     loginBtnEl.innerText = `👤 ${data.name}`;
                     loginBtnEl.onclick = () => { auth.signOut().then(() => location.reload()); };
 
-                    // Check Suspensions/Bans
                     let isSuspended = data.suspendedUntil && data.suspendedUntil.toDate() > new Date();
                     if (data.isBanned || isSuspended) {
                         document.getElementById("bannedOverlay").style.display = "flex";
@@ -217,7 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         document.getElementById("bannedOverlay").style.display = "none";
                     }
 
-                    // Check Personal/Global Notices
                     if (data.personalNotice) {
                         showNoticeModal("Admin Notice", data.personalNotice);
                         db.collection("users").doc(user.uid).update({ personalNotice: firebase.firestore.FieldValue.delete() });
@@ -227,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Listen for Global Notice Broadcasts
     db.collection("settings").doc("globalNotice").onSnapshot(doc => {
         if (doc.exists && doc.data().title && !sessionStorage.getItem("noticeSeen_" + doc.data().timestamp?.seconds)) {
             showNoticeModal(doc.data().title, doc.data().text);
@@ -253,7 +240,6 @@ async function checkUserProfile(user) {
     }
 }
 
-// Loads Products and Attaches Strict Auth Checks to "Buy Now"
 async function loadDynamicProducts() {
     const container = document.getElementById("productsContainer");
     db.collection("products").onSnapshot(snapshot => {
@@ -278,7 +264,7 @@ async function loadDynamicProducts() {
             document.querySelectorAll(".buy-trigger").forEach(button => {
                 button.onclick = (e) => {
                     if (!auth.currentUser) {
-                        alert("🔒 Sign In Required: Please log in or sign up before adding items to your cart!");
+                        alert("🔒 Sign In Required: Please log in before adding items to your cart!");
                         document.getElementById("authModal").classList.remove("hidden");
                         return;
                     }
