@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,7 +41,7 @@
             <button id="openCartBtn" class="cyber-btn" style="position: relative; padding: 8px 14px; font-size: 13px;">
                 🛒 Cart <span id="cartBadge" style="background: var(--neon-purple); color:#fff; border-radius:50%; padding:2px 6px; font-size:10px; margin-left:4px;">0</span>
             </button>
-            <button id="loginBtn" class="cyber-btn cyber-btn-8d" style="padding: 9px 18px; font-size: 13px;">Login / Sign Up</button>
+            <button id="loginBtn" class="cyber-btn cyber-btn-8d" style="padding: 9px 18px; font-size: 13px;">Login</button>
         </div>
     </nav>
 
@@ -109,25 +109,24 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Auth Modal (Google Only) -->
     <div id="authModal" class="modal hidden">
-        <div class="modal-content cyber-box">
+        <div class="modal-content cyber-box" style="max-width: 400px; text-align: center;">
             <span class="close-btn" id="closeModal">&times;</span>
-            <h2 id="modalTitle">Access Terminal</h2>
+            <h2 id="modalTitle" style="margin-bottom: 20px; color: var(--neon-purple);">Access Terminal</h2>
             
             <div id="loginStep" class="auth-panel">
-                <button class="cyber-btn full-width" id="googleLoginBtn" style="background: #db4437; margin-bottom: 15px;"><i class="fab fa-google" style="margin-right: 8px;"></i> Continue with Google</button>
-                <div class="divider" style="text-align: center; margin: 15px 0; color: #888; font-size: 12px;"><span>OR</span></div>
-                <input type="email" id="authEmail" placeholder="Enter Email Address" class="cyber-input">
-                <input type="password" id="authPassword" placeholder="Enter Password" class="cyber-input">
-                <button id="emailPassLoginBtn" class="cyber-btn full-width">Login / Sign Up</button>
+                <p style="font-size: 14px; color: #b39ddb; margin-bottom: 25px; line-height: 1.5;">Welcome to Cyber Store. Securely authenticate with your Google account to proceed.</p>
+                <button class="cyber-btn full-width" id="googleLoginBtn" style="background: #db4437; font-size: 16px; padding: 12px; border-radius: 50px; box-shadow: 0 4px 15px rgba(219, 68, 55, 0.4);">
+                    <i class="fab fa-google" style="margin-right: 10px;"></i> Continue with Google
+                </button>
             </div>
 
             <div id="profileStep" class="auth-panel hidden">
-                <h3>Complete Profile</h3>
-                <p class="checkout-subtitle" style="margin-bottom: 15px; font-size: 13px; color: #b39ddb;">Please provide your details to complete setup</p>
-                <input type="text" id="profileName" placeholder="Full Name (Required)" class="cyber-input">
-                <label style="font-size: 11px; color: var(--neon-purple); display:block; margin-bottom:5px;">Date of Birth:</label>
+                <h3 style="margin-bottom: 15px;">Complete Profile</h3>
+                <p class="checkout-subtitle" style="margin-bottom: 20px; font-size: 13px; color: #b39ddb;">Please provide your details to complete setup</p>
+                <input type="text" id="profileName" placeholder="Full Name (Required)" class="cyber-input" style="text-align: center;">
+                <label style="font-size: 11px; color: var(--neon-purple); display:block; margin-bottom:5px; text-align: left;">Date of Birth:</label>
                 <input type="date" id="profileDob" class="cyber-input">
                 <button id="saveProfileBtn" class="cyber-btn full-width">Save Profile & Enter Store</button>
             </div>
