@@ -157,7 +157,15 @@
         <span>Support</span>
     </button>
 
-    <!-- Voiceflow Chat Widget Script connected to your Project ID -->
+    <!-- Firebase SDKs FIRST -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Custom Logic NEXT -->
+    <script src="app.js" defer></script>
+
+    <!-- Voiceflow Chat Widget Script LAST -->
     <script type="text/javascript">
       (function(d, t) {
           var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
@@ -170,24 +178,6 @@
           }
           v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
       })(document, 'script');
-
-      // Connect custom support button to Voiceflow widget
-      document.addEventListener("DOMContentLoaded", () => {
-          const supportBtn = document.getElementById('aiSupportFloatBtn');
-          if (supportBtn) {
-              supportBtn.addEventListener('click', () => {
-                  if (window.voiceflow && window.voiceflow.chat) {
-                      window.voiceflow.chat.open();
-                  }
-              });
-          }
-      });
     </script>
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js"></script>
 </body>
 </html>
