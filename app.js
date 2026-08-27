@@ -2,13 +2,12 @@
 // 🔥 YOUR LIVE FIREBASE CONFIGURATION 🔥
 // ==========================================
 const firebaseConfig = {
-    apiKey: "AIzaSyDUowN2gw6HvlBooZw2VDbroabjGhjMlRM",
-    authDomain: "cyber-store-b2668.firebaseapp.com",
-    projectId: "cyber-store-b2668",
-    storageBucket: "cyber-store-b2668.firebasestorage.app",
-    messagingSenderId: "1014814260411",
-    appId: "1:1014814260411:web:c7adff1a39026e8fd53d9e",
-    measurementId: "G-4HP0L2KV1Q"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 // ==========================================
 
@@ -23,18 +22,18 @@ let activeDiscount = 0;
 let activeGift = ""; 
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Sync Live Ticker (With Error Handling)
+    // 1. Sync Live Ticker
     db.collection("settings").doc("ticker").onSnapshot((doc) => {
         if (doc.exists && doc.data().text) {
             const tickerEl = document.getElementById("tickerTextContent");
             if (tickerEl) tickerEl.innerHTML = doc.data().text;
         }
-    }, err => console.log("Ticker sync active"));
+    });
 
     // 2. Load Dynamic Products from Firestore
     loadDynamicProducts();
 
-    // 3. Auth Modal Triggers (Fixed!)
+    // 3. Auth Modal Triggers
     const loginBtn = document.getElementById("loginBtn");
     const authModal = document.getElementById("authModal");
     const closeModal = document.getElementById("closeModal");
@@ -93,7 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cartModal.classList.remove("hidden");
         };
     }
-    document.getElementById("closeCartModal").onclick = () => cartModal.classList.add("hidden");
+    const closeCartBtn = document.getElementById("closeCartModal");
+    if(closeCartBtn) closeCartBtn.onclick = () => cartModal.classList.add("hidden");
 
     // 5. Instagram Calculator Fixed Logic
     const instaCountInput = document.getElementById("instaCount");
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // 7. Promo Code Application (Discounts & Free Gifts)
+    // 7. Promo Code Application
     const applyPromoBtn = document.getElementById("applyPromoBtn");
     if (applyPromoBtn) {
         applyPromoBtn.onclick = async () => {
@@ -138,13 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const doc = await db.collection("promos").doc(code).get();
                 if (doc.exists) {
                     const promoData = doc.data();
-                    
                     if (promoData.targetSixId && promoData.targetSixId !== auth.currentUser.sixDigitId) {
                         feedback.style.color = "var(--danger-color)";
                         feedback.innerText = "This promo code is assigned to a different user.";
                         return;
                     }
-                    
                     activeDiscount = promoData.discountPercent || 0;
                     activeGift = promoData.freeGift || "";
                     
@@ -173,7 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
             paymentModal.classList.remove("hidden");
         };
     }
-    document.getElementById("closePaymentModal").onclick = () => paymentModal.classList.add("hidden");
+    const closePaymentBtn = document.getElementById("closePaymentModal");
+    if(closePaymentBtn) closePaymentBtn.onclick = () => paymentModal.classList.add("hidden");
 
     const submitOrderBtn = document.getElementById("submitOrderBtn");
     if (submitOrderBtn) {
@@ -260,22 +259,39 @@ async function checkUserProfile(user) {
     }
 }
 
-// Fixed Product Loader (Prevents crashes and loads cleanly)
+// 🛒 DYNAMIC PRODUCTS LOADER WITH VARIANTS & LIMITED TAGS
 async function loadDynamicProducts() {
     const container = document.getElementById("productsContainer");
     
     db.collection("products").onSnapshot(snapshot => {
         if (snapshot.empty) {
-            container.innerHTML = `<p style="text-align: center; width: 100%; color: #888;">No products available yet. Deploy products via the Master Admin Panel.</p>`;
+            seedDefaultProducts(); 
         } else {
             let html = "";
             snapshot.forEach(doc => {
                 const p = doc.data();
+                
+                // Construct Variant Dropdown OR Regular Price
+                let priceHtml = "";
+                if (p.variants && p.variants.trim() !== "") {
+                    let opts = p.variants.split(",").map(v => {
+                        let parts = v.split(":");
+                        return `<option value="${parts[1]?.trim()}" data-details="${parts[0]?.trim()}">${parts[0]?.trim()} - Rs. ${parts[1]?.trim()}</option>`;
+                    }).join("");
+                    priceHtml = `<select class="cyber-input variant-select" style="margin-bottom: 10px; border-color: var(--neon-purple); font-weight: bold;">${opts}</select>`;
+                } else {
+                    priceHtml = `<p class="price" data-price="${p.price}">Rs. ${p.price}</p>`;
+                }
+
+                // Construct Limited Time Badge
+                let limitedBadge = p.isLimited ? `<div style="position:absolute; top:-12px; right:-10px; background:#ff0055; color:#fff; font-size:10px; font-weight:bold; padding:5px 10px; border-radius:12px; box-shadow:0 0 15px #ff0055; z-index: 10;">🔥 LIMITED TIME</div>` : '';
+
                 html += `
-                <div class="card cyber-box" data-name="${p.name}" data-price="${p.price}" data-require-email="${p.requireEmail}">
+                <div class="card cyber-box" data-name="${p.name}" data-base-price="${p.price}" data-require-email="${p.requireEmail}" style="position: relative;">
+                    ${limitedBadge}
                     <i class="${p.iconClass} brand-icon" style="color: ${p.iconColor};"></i>
                     <h3>${p.name}</h3>
-                    <p class="price">Rs. ${p.price}</p>
+                    ${priceHtml}
                     <p class="desc">${p.desc}</p>
                     ${p.requireEmail ? `<input type="email" placeholder="Activation Email (Required)" class="cyber-input user-email-input">` : ''}
                     <button class="cyber-btn full-width buy-trigger">Buy Now</button>
@@ -283,7 +299,7 @@ async function loadDynamicProducts() {
             });
             container.innerHTML = html;
 
-            // Reattach Buy Now buttons to strict auth check
+            // Reattach Buy Now buttons
             document.querySelectorAll(".buy-trigger").forEach(button => {
                 button.onclick = (e) => {
                     if (!auth.currentUser) {
@@ -293,23 +309,47 @@ async function loadDynamicProducts() {
                     }
                     const card = e.target.closest(".card");
                     const name = card.getAttribute("data-name");
-                    const price = parseFloat(card.getAttribute("data-price"));
+                    
+                    let price = 0;
+                    let details = "";
+                    
+                    // Check if product uses variant dropdown
+                    const variantSelect = card.querySelector(".variant-select");
+                    if (variantSelect) {
+                        price = parseFloat(variantSelect.value);
+                        details = variantSelect.options[variantSelect.selectedIndex].getAttribute("data-details");
+                    } else {
+                        price = parseFloat(card.getAttribute("data-base-price"));
+                    }
+
                     const emailInput = card.querySelector(".user-email-input");
                     const email = emailInput ? emailInput.value.trim() : "";
                     
                     if (card.getAttribute("data-require-email") === "true" && !email) {
                         alert("Please enter a valid activation email address."); return;
                     }
-                    cart.push({ name, price, details: "", email });
+                    
+                    cart.push({ name, price, details, email });
                     updateCartUI();
                     document.getElementById("cartModal").classList.remove("hidden");
                 };
             });
         }
     }, error => {
-        console.error("Database connection error: ", error);
-        container.innerHTML = `<p style="text-align: center; width: 100%; color: #ff0055;">Database connection error. Please check your Firebase rules.</p>`;
+        container.innerHTML = `<p style="text-align: center; width: 100%; color: #ff0055;">Database connection error.</p>`;
     });
+}
+
+function seedDefaultProducts() {
+    // Exactly as requested with new pricing, variants, and correct company email status
+    const defaults = [
+        { name: "Netflix Premium", price: 100, requireEmail: false, iconClass: "fa-solid fa-n", iconColor: "#E50914", desc: "Provided on company's email. 100% warranty.", isLimited: false, variants: "" },
+        { name: "Amazon Prime", price: 49, requireEmail: false, iconClass: "fab fa-amazon", iconColor: "#00A8E1", desc: "Provided in company's email. 100% warranty.", isLimited: false, variants: "1 Month:49, 6 Months:69" },
+        { name: "Crunchyroll", price: 29, requireEmail: false, iconClass: "fas fa-tv", iconColor: "#F47521", desc: "24/7 support available, 30 days warranty provided in company's email.", isLimited: true, variants: "" },
+        { name: "SonyLIV", price: 39, requireEmail: false, iconClass: "fas fa-play-circle", iconColor: "#00A8E1", desc: "30 days warranty provided in company's email. 24/7 customer support available.", isLimited: false, variants: "" },
+        { name: "Spotify", price: 59, requireEmail: false, iconClass: "fab fa-spotify", iconColor: "#1DB954", desc: "Premium music experience. Provided in company's email.", isLimited: false, variants: "1 Month:59, 2 Months:69" }
+    ];
+    defaults.forEach(p => db.collection("products").doc(p.name).set(p));
 }
 
 function calculateTotal() {
