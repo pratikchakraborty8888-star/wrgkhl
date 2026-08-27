@@ -136,7 +136,7 @@
     <!-- Dynamic Products Grid -->
     <main class="container">
         <section class="grid" id="productsContainer">
-            <p style="text-align: center; width: 100%; color: #888;">Loading terminal database...</p>
+            <p style="text-align: center; width: 100%; color: #888;">Initializing Storefront Data...</p>
         </section>
 
         <!-- Fixed Instagram Section -->
@@ -156,6 +156,32 @@
         <i class="fas fa-robot"></i>
         <span>Support</span>
     </button>
+
+    <!-- Voiceflow Chat Widget Script & Custom Support Trigger -->
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '6a781686163f49d0c15784eb' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production'
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+
+      document.addEventListener("DOMContentLoaded", () => {
+          const supportBtn = document.getElementById('aiSupportFloatBtn');
+          if (supportBtn) {
+              supportBtn.addEventListener('click', () => {
+                  if (window.voiceflow && window.voiceflow.chat) {
+                      window.voiceflow.chat.open();
+                  }
+              });
+          }
+      });
+    </script>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
