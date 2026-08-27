@@ -2,12 +2,13 @@
 // 🔥 YOUR LIVE FIREBASE CONFIGURATION 🔥
 // ==========================================
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDUowN2gw6HvlBooZw2VDbroabjGhjMlRM",
+    authDomain: "cyber-store-b2668.firebaseapp.com",
+    projectId: "cyber-store-b2668",
+    storageBucket: "cyber-store-b2668.firebasestorage.app",
+    messagingSenderId: "1014814260411",
+    appId: "1:1014814260411:web:c7adff1a39026e8fd53d9e",
+    measurementId: "G-4HP0L2KV1Q"
 };
 // ==========================================
 
@@ -21,7 +22,21 @@ let cart = [];
 let activeDiscount = 0;
 let activeGift = ""; 
 
-document.addEventListener("DOMContentLoaded", () => {
+// Fortified Event Listener to ensure DOM is fully loaded
+window.addEventListener("load", () => {
+    
+    // Connect custom support button to Voiceflow widget
+    const supportBtn = document.getElementById('aiSupportFloatBtn');
+    if (supportBtn) {
+        supportBtn.addEventListener('click', () => {
+            if (window.voiceflow && window.voiceflow.chat) {
+                window.voiceflow.chat.open();
+            } else {
+                console.warn("Voiceflow widget not yet loaded.");
+            }
+        });
+    }
+
     // 1. Sync Live Ticker
     db.collection("settings").doc("ticker").onSnapshot((doc) => {
         if (doc.exists && doc.data().text) {
@@ -39,30 +54,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeModal = document.getElementById("closeModal");
 
     if (loginBtn && authModal) {
-        loginBtn.onclick = () => {
+        loginBtn.addEventListener("click", () => {
             document.getElementById("loginStep").classList.remove("hidden");
             document.getElementById("profileStep").classList.add("hidden");
             authModal.classList.remove("hidden");
-        };
+        });
     }
-    if (closeModal) closeModal.onclick = () => authModal.classList.add("hidden");
+    
+    if (closeModal) {
+        closeModal.addEventListener("click", () => {
+            authModal.classList.add("hidden");
+        });
+    }
 
     // Google Sign-In Only
     const googleLoginBtn = document.getElementById("googleLoginBtn");
     if (googleLoginBtn) {
-        googleLoginBtn.onclick = async () => {
+        googleLoginBtn.addEventListener("click", async () => {
             try {
                 const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 checkUserProfile(result.user);
             } catch (err) { 
                 alert("Google Sign-In Failed: " + err.message); 
             }
-        };
+        });
     }
 
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     if (saveProfileBtn) {
-        saveProfileBtn.onclick = async () => {
+        saveProfileBtn.addEventListener("click", async () => {
             const user = auth.currentUser;
             const name = document.getElementById("profileName").value.trim();
             const dob = document.getElementById("profileDob").value;
@@ -76,40 +96,44 @@ document.addEventListener("DOMContentLoaded", () => {
             
             authModal.classList.add("hidden");
             location.reload();
-        };
+        });
     }
 
     // 4. Cart Modal Security Check
     const cartModal = document.getElementById("cartModal");
     const openCartBtn = document.getElementById("openCartBtn");
     if (openCartBtn) {
-        openCartBtn.onclick = () => {
+        openCartBtn.addEventListener("click", () => {
             if (!auth.currentUser) {
                 alert("🔒 Access Denied: You must Login before accessing your cart!");
                 authModal.classList.remove("hidden");
                 return;
             }
             cartModal.classList.remove("hidden");
-        };
+        });
     }
     const closeCartBtn = document.getElementById("closeCartModal");
-    if(closeCartBtn) closeCartBtn.onclick = () => cartModal.classList.add("hidden");
+    if(closeCartBtn) {
+        closeCartBtn.addEventListener("click", () => {
+            cartModal.classList.add("hidden");
+        });
+    }
 
-    // 5. Instagram Calculator Fixed Logic
+    // 5. Instagram Calculator Logic
     const instaCountInput = document.getElementById("instaCount");
     const instaPriceSpan = document.getElementById("instaPrice");
     if (instaCountInput && instaPriceSpan) {
-        instaCountInput.oninput = () => {
+        instaCountInput.addEventListener("input", () => {
             let count = parseInt(instaCountInput.value) || 100;
             let price = count < 2000 ? (count / 100) * 7 : (count / 100) * 6;
             instaPriceSpan.innerText = Math.round(price);
-        };
+        });
     }
 
     // 6. Instagram Buy Trigger
     const instaBuyTrigger = document.getElementById("instaBuyTrigger");
     if (instaBuyTrigger) {
-        instaBuyTrigger.onclick = () => {
+        instaBuyTrigger.addEventListener("click", () => {
             if (!auth.currentUser) {
                 alert("🔒 Sign In Required: Please log in to add this to your cart.");
                 authModal.classList.remove("hidden");
@@ -123,13 +147,13 @@ document.addEventListener("DOMContentLoaded", () => {
             cart.push({ name: "Instagram Followers", price: Math.round(price), details: `${count} Followers (${username})`, email: username });
             updateCartUI();
             cartModal.classList.remove("hidden");
-        };
+        });
     }
 
     // 7. Promo Code Application
     const applyPromoBtn = document.getElementById("applyPromoBtn");
     if (applyPromoBtn) {
-        applyPromoBtn.onclick = async () => {
+        applyPromoBtn.addEventListener("click", async () => {
             const code = document.getElementById("promoCodeInput").value.trim().toUpperCase();
             const feedback = document.getElementById("promoFeedback");
             if (!code) return;
@@ -158,25 +182,29 @@ document.addEventListener("DOMContentLoaded", () => {
                     feedback.innerText = "Invalid promo code.";
                 }
             } catch (e) { feedback.style.color = "var(--danger-color)"; feedback.innerText = "Error applying code."; }
-        };
+        });
     }
 
     // 8. Checkout / Submit
     const paymentModal = document.getElementById("paymentModal");
     const proceedBtn = document.getElementById("proceedToCheckoutBtn");
     if (proceedBtn) {
-        proceedBtn.onclick = () => {
+        proceedBtn.addEventListener("click", () => {
             if (cart.length === 0) return alert("Cart is empty!");
             cartModal.classList.add("hidden");
             paymentModal.classList.remove("hidden");
-        };
+        });
     }
     const closePaymentBtn = document.getElementById("closePaymentModal");
-    if(closePaymentBtn) closePaymentBtn.onclick = () => paymentModal.classList.add("hidden");
+    if(closePaymentBtn) {
+        closePaymentBtn.addEventListener("click", () => {
+            paymentModal.classList.add("hidden");
+        });
+    }
 
     const submitOrderBtn = document.getElementById("submitOrderBtn");
     if (submitOrderBtn) {
-        submitOrderBtn.onclick = async () => {
+        submitOrderBtn.addEventListener("click", async () => {
             const phone = document.getElementById("customerPhone").value.trim();
             const utr = document.getElementById("utrInput").value.trim();
             if (phone.length !== 10) return alert("Valid 10-digit number required.");
@@ -204,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("promoCodeInput").value = "";
             updateCartUI(); 
             paymentModal.classList.add("hidden");
-        };
+        });
     }
 
     // 9. Real-time User Listener
@@ -246,7 +274,10 @@ function showNoticeModal(title, text) {
     document.getElementById("cyberMsgTitle").innerText = title;
     document.getElementById("cyberMsgText").innerText = text;
     document.getElementById("cyberMsgModal").classList.remove("hidden");
-    document.getElementById("cyberMsgCloseBtn").onclick = () => document.getElementById("cyberMsgModal").classList.add("hidden");
+    const closeBtn = document.getElementById("cyberMsgCloseBtn");
+    if(closeBtn) {
+        closeBtn.onclick = () => document.getElementById("cyberMsgModal").classList.add("hidden");
+    }
 }
 
 async function checkUserProfile(user) {
@@ -259,7 +290,6 @@ async function checkUserProfile(user) {
     }
 }
 
-// 🛒 DYNAMIC PRODUCTS LOADER WITH VARIANTS & LIMITED TAGS
 async function loadDynamicProducts() {
     const container = document.getElementById("productsContainer");
     
@@ -271,7 +301,6 @@ async function loadDynamicProducts() {
             snapshot.forEach(doc => {
                 const p = doc.data();
                 
-                // Construct Variant Dropdown OR Regular Price
                 let priceHtml = "";
                 if (p.variants && p.variants.trim() !== "") {
                     let opts = p.variants.split(",").map(v => {
@@ -283,7 +312,6 @@ async function loadDynamicProducts() {
                     priceHtml = `<p class="price" data-price="${p.price}">Rs. ${p.price}</p>`;
                 }
 
-                // Construct Limited Time Badge
                 let limitedBadge = p.isLimited ? `<div style="position:absolute; top:-12px; right:-10px; background:#ff0055; color:#fff; font-size:10px; font-weight:bold; padding:5px 10px; border-radius:12px; box-shadow:0 0 15px #ff0055; z-index: 10;">🔥 LIMITED TIME</div>` : '';
 
                 html += `
@@ -299,9 +327,8 @@ async function loadDynamicProducts() {
             });
             container.innerHTML = html;
 
-            // Reattach Buy Now buttons
             document.querySelectorAll(".buy-trigger").forEach(button => {
-                button.onclick = (e) => {
+                button.addEventListener("click", (e) => {
                     if (!auth.currentUser) {
                         alert("🔒 Sign In Required: Please log in before adding items to your cart!");
                         document.getElementById("authModal").classList.remove("hidden");
@@ -313,7 +340,6 @@ async function loadDynamicProducts() {
                     let price = 0;
                     let details = "";
                     
-                    // Check if product uses variant dropdown
                     const variantSelect = card.querySelector(".variant-select");
                     if (variantSelect) {
                         price = parseFloat(variantSelect.value);
@@ -332,7 +358,7 @@ async function loadDynamicProducts() {
                     cart.push({ name, price, details, email });
                     updateCartUI();
                     document.getElementById("cartModal").classList.remove("hidden");
-                };
+                });
             });
         }
     }, error => {
@@ -341,11 +367,10 @@ async function loadDynamicProducts() {
 }
 
 function seedDefaultProducts() {
-    // Exactly as requested with new pricing, variants, and correct company email status
     const defaults = [
         { name: "Netflix Premium", price: 100, requireEmail: false, iconClass: "fa-solid fa-n", iconColor: "#E50914", desc: "Provided on company's email. 100% warranty.", isLimited: false, variants: "" },
         { name: "Amazon Prime", price: 49, requireEmail: false, iconClass: "fab fa-amazon", iconColor: "#00A8E1", desc: "Provided in company's email. 100% warranty.", isLimited: false, variants: "1 Month:49, 6 Months:69" },
-        { name: "Crunchyroll", price: 29, requireEmail: false, iconClass: "fas fa-tv", iconColor: "#F47521", desc: "24/7 support available, 30 days warranty provided in company's email.", isLimited: true, variants: "" },
+        { name: "Crunchyroll", price: 29, requireEmail: false, iconClass: "fas fa-tv", iconColor: "#F47521", desc: "24/7 support available, 30 days warranty provided in company's email.", isLimited: false, variants: "" },
         { name: "SonyLIV", price: 39, requireEmail: false, iconClass: "fas fa-play-circle", iconColor: "#00A8E1", desc: "30 days warranty provided in company's email. 24/7 customer support available.", isLimited: false, variants: "" },
         { name: "Spotify", price: 59, requireEmail: false, iconClass: "fab fa-spotify", iconColor: "#1DB954", desc: "Premium music experience. Provided in company's email.", isLimited: false, variants: "1 Month:59, 2 Months:69" }
     ];
